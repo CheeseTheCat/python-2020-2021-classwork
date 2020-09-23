@@ -1,0 +1,5 @@
+James Hooper
+9/9/2020
+This is my 2020-2021 python school project folder
+
+this is for a test
