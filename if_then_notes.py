@@ -10,12 +10,12 @@ elif (score >= 80):
     print("Looking great!")
 elif (score >= 70):
     print("Thats's better!")
-elif (score < 70:)
+elif (score < 70):
     print("Try harder!")
 elif (score >= 60):
     print("You hardly passed.")
 else:
-    print("You failed."
+    print("You failed.")
 
 
 
