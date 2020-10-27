@@ -5,36 +5,39 @@
 # Whichever option they chose, the function for that page is run, i.e. page3() or page5()
 # The function will print all text from the page chosen to the next choice and repeat until
 # an ending is reached, then an ending message will print based on that ending.
-# We should state which page's contains each function with the doc commen.t ex. """ pages 1 and2 """
+# We should state which page's contains each function with the doc commennt ex. """ pages 1 and2 """
 # Book is at https://mudarwan.files.wordpress.com/2010/08/choose-your-own-adventure-018-underground-kingdom-edward-packard.pdf
-# Link to the Google Meet we use is: https://meet.google.com/xot-yrpk-uym
 
-#Variable Declorations       #####################################################################################################
+
+############################## Variable Declarations ##############################
+
 the_end =  """
-                       _____ _            _____          _ 
-                      |_   _| |          |  ___|        | |
-                        | | | |__   ___  | |__ _ __   __| |
-                        | | | '_ \ / _ \ |  __| '_ \ / _` |
-                        | | | | | |  __/ | |__| | | | (_| |
-                        \_/ |_| |_|\___| \____/_| |_|\__,_|
+     _____ _            _____          _ 
+    |_   _| |          |  ___|        | |
+      | | | |__   ___  | |__ _ __   __| |
+      | | | '_ \ / _ \ |  __| '_ \ / _` |
+      | | | | | |  __/ | |__| | | | (_| |
+      \_/ |_| |_|\___| \____/_| |_|\__,_|
 """
-#This is the Title art
+
+# This is the Title art
 title_art = """
-WELCOME TO THE:
- _   _           _             _____                           _   _   ___                 _                 
-| | | |         | |           |  __ \                         | | | | / (_)               | |                
-| | | |_ __   __| | ___ _ __  | |  \/_ __ ___  _   _ _ __   __| | | |/ / _ _ __   __ _  __| | ___  _ __ ___  
-| | | | '_ \ / _` |/ _ \ '__| | | __| '__/ _ \| | | | '_ \ / _` | |    \| | '_ \ / _` |/ _` |/ _ \| '_ ` _ \ 
-| |_| | | | | (_| |  __/ |    | |_\ \ | | (_) | |_| | | | | (_| | | |\  \ | | | | (_| | (_| | (_) | | | | | |
- \___/|_| |_|\__,_|\___|_|     \____/_|  \___/ \__,_|_| |_|\__,_| \_| \_/_|_| |_|\__, |\__,_|\___/|_| |_| |_|
-                                                                                __/ |                      
-                                                                               |___/ 
-   Made By: Edward Packard
-   Coded By: Kaiden DeBry, Spencer Burton, James Hooper, Haley Bice, Jordan Jackson, Elaina Kell 
+ WELCOME TO THE:
+     _   _           _             _____                           _   _   ___                 _                 
+    | | | |         | |           |  __ \                         | | | | / (_)               | |                
+    | | | |_ __   __| | ___ _ __  | |  \/_ __ ___  _   _ _ __   __| | | |/ / _ _ __   __ _  __| | ___  _ __ ___  
+    | | | | '_ \ / _` |/ _ \ '__| | | __| '__/ _ \| | | | '_ \ / _` | |    \| | '_ \ / _` |/ _` |/ _ \| '_ ` _ \ 
+    | |_| | | | | (_| |  __/ |    | |_\ \ | | (_) | |_| | | | | (_| | | |\  \ | | | | (_| | (_| | (_) | | | | | |
+     \___/|_| |_|\__,_|\___|_|     \____/_|  \___/ \__,_|_| |_|\__,_| \_| \_/_|_| |_|\__, |\__,_|\___/|_| |_| |_|
+                                                                                      __/ |                      
+                                                                                     |___/ 
+    Made By: Edward Packard
+    Coded By: Kaiden DeBry, Spencer Burton, James Hooper, Haley Bice, Jordan Jackson, Elaina Kell 
    
-   """
-#this is the map of the underground kingdom
-undermap = """
+"""
+
+# This is the map of the underground kingdom
+under_map = """
                                                   
                               ..,#@.#%,,&%(/&( /.                              
                               .                  ,                             
@@ -75,13 +78,12 @@ undermap = """
                                                   *#&%                         
                                                     /*/&#.                     
                                               .,(@                             
-                                                                               
-                                                                               
-                                                            
-    
+                                                                                       
 """
-#This is the creature talked about on page 10
-page10creature = """
+
+# This is the creature talked about on page 10
+page10_creature = """
+
                                                                  .   #/ (      
                                                             .. *./&&%&(%#*./.   
                                                           #* .@@@#  # , #(@&/.#(
@@ -107,12 +109,11 @@ page10creature = """
      @*.  @/  @,., , (.                                                         
        .  #.%/#//#                                                              
                                                                                 
-
 """
-#This is the mountain on page 87
-page87mountain = """
-                                                                                
-                                                                                
+
+# This is the mountain on page 87
+page87_mountain = """
+                                                                                                                              
                                     ./      #               *                   
                                #%#,(*   #%  #.,  ( .  /*%(  #../       ,.    /  
                        %((#( #           ( ,,.  #   /,/##.  *#%/ *,*%,((@*/%(/ .
@@ -167,33 +168,65 @@ page87mountain = """
               (  & . /,                 ,,.   #@@%/#..                          
             ,. * .  *                  &@@&&@%( ...                             
             #  .   ,               *  %@&(*   *                                 
-         ,       /            (   %&@ /    / , 
+         ,       /            (   %&@ /    / ,
+         
 """
 
-##################################################################################################################################
-#functions    ####################################################################################################################
-def titlepage():
-     print(title_art)
+
+############################## Functions / Pages ##############################
+
+def is_only_digits(string) :
+    """Checks if the provided string has only numerical digits.""" 
+    result = True
+
+    for character in string :
+        if character not in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9") :
+            result = False
+            break
+
+    return result
                                     
 def ask_page(option1, option2) :
     """Asks the user for a page."""
-    response = None
-    while response not in (option1, option2) :
-    	response = int(input("Which page do you want to go to? "))
+    response = ""
 
-    return response
+    # Just for spacing
+    print()
+    
+    while (response == "") or (int(response) not in (option1, option2)) :
+        response = input(str.format("Which page do you want to go to?({} or {}): ", option1, option2))
+
+        # Check if it is only digits, if not then just loop again
+        if not is_only_digits(response) :
+            response = ""
+
+    # This is here to divide pages
+    print(str.format("\n=============== {} ===============", response))
+    
+    return int(response)
 
 def ask_page_extra(option1, option2, option3) :
-    """Asks the user for a page."""
-    response = None
-    while response not in (option1, option2, option3) :
-    	response = int(input("Which page do you want to go to? "))
+    """Asks the user for a page, with 3 options."""
+    response = ""
 
-    return response
+    # Just for spacing
+    print()
+    
+    while (response == "") or (int(response) not in (option1, option2, option3)) :
+        response = input(str.format("Which page do you want to go to?({}, {}, or {}): ", option1, option2, option3))
+
+        # Check if it is only digits, if not then just loop again
+        if not is_only_digits(response) :
+            response = ""       
+
+    # This is here to divide pages
+    print(str.format("\n=============== {} ===============", response))
+
+    return int(response)
 
 def intropage() :
-    """This is the first two pages that create the background of the story"""
-    print("""
+     """This is the first two pages that create the background of the story"""
+     print("""
 PROFESSOR BRUCKNER'S THEORY
 The discovery of the Bottomless Crevasse in
 Greenland by Dr. Nera Vivaldi supports my
@@ -234,12 +267,12 @@ The Black Sun absorbs heat. If there is an
 underground kingdom, it is the Black Sun that
 keeps its inhabitants from being baked to
 death by the heat within the earth!""")
-#This is the map of the underground kingdom
-    print(undermap)        
+     print(under_map)        
 # The triple quote string actualy does not need to be indented just the print part
+
 def page1() :
-    """Pages 1 and 2"""
-    print("""
+     """Pages 1 and 2"""
+     print("""
 You are standing on the Toan Glacier in northern Greenland,
 staring down into the black void
 of the crevasse. You shiver as you wonder
@@ -281,15 +314,15 @@ If you try to land on the ledge,
 turn to page 5.
 If not, go on to page 3.""")
         
-    page = ask_page(3, 5)
-    if page == 3 :
-        page3()
-    elif page == 5 :
-        page5()
-              
+     page = ask_page(3, 5)
+     if page == 3 :
+       page3()
+     elif page == 5 :
+       page5()
+          
 def page3() :
-    """Pages 3 and 6"""
-    print("""
+     """Pages 3 and 6"""
+     print("""
 Your consciousness slips away as you fall faster
 down, down, down.
 The next thing you know, you're floating in air.
@@ -342,15 +375,15 @@ turn to page 15.
 If you hold your ground and face it,
 turn to page 10.""")
 
-    page = ask_page(10, 15)
-    if page == 10 :
+     page = ask_page(10, 15)
+     if page == 10 :
         page10()
-    elif page == 15 :
+     elif page == 15 :
         page15()
           
 def page5() :
-    """Page 5"""
-    print("""
+     """Page 5"""
+     print("""
 Your whole body is racked with pain as you
 crash onto the ledge. You're shaken and bruised
 but still alive! A snowbank cushioned your fall.
@@ -369,11 +402,11 @@ If you warn Larsen and Sneed,
 turn to page 13.
 If you just yell, "Please hurry!" turn to page 9.""")
     
-    page = ask_page(9, 13)
-    if page == 9 :
-        page9()
-    elif page == 13 :
-        page13()
+     page = ask_page(9, 13)
+     if page == 9 :
+          page9()
+     elif page == 13 :
+          page13()
           
 def page13() :
     """Page 13 - Ending"""
@@ -447,7 +480,7 @@ If you decide to wait, turn to page 20.""")
 
 def page10() :
     """Page 10"""
-    print(page10creature)
+    print(page10_creature)
     print("""
 You stand there and watch as the strange creature 
 walks slowly toward you. Then you see the
@@ -515,9 +548,9 @@ If you decide to wait, turn to page 20.""")
   
     page = ask_page(18, 20)
     if page == 18 :
-    	page18()
+        page18()
     elif page == 20 :
-    	page20()
+        page20()
 
 def page8() :
     """Page 8 - Ending"""
@@ -1137,7 +1170,11 @@ You could probably climb a nearby tree and
 hide among the clusters of giant leaves. But is it
 wise to run like a frightened animal? Maybe
 things will go better for you if you bravely face the
-inhabitants of this world.""")
+inhabitants of this world.
+If you decide to face the creatures,
+turn to page 42.
+If you decide to hide in a cluster-leaf tree,
+turn to page 46.""")
 
     page = ask_page(42, 46)
     if page == 42 :
@@ -1328,7 +1365,7 @@ his warriors, turn to page 52.
 If you tell him that you won't take part in a
 war, turn to page 56.""")
     
-    page = ask_page9(52, 56)
+    page = ask_page(52, 56)
     if page == 52 :
     	page52()
     elif page == 56 :
@@ -1650,7 +1687,10 @@ leave you here. I'll go to the Grand Akpar with
 you!"
 Dr. Vivaldi replies, "Think carefully before you
 make such a decision."
-""")
+If you decide to face the Grand Akpar with Dr.
+Vivaldi, turn to page 70.
+If you decide to escape while you still have a
+chance, turn to page 100.""")
 
     page = ask_page(70, 100)
     if page == 70 :
@@ -1827,5 +1867,410 @@ surface, turn to page 82.""")
     elif page == 82 :
     	page82()
 
+def page81() :
+    """Page 81 and 83"""
+    print("""
+"This may be the only chance earth people
+have to explore the Underground Kingdom," you
+say, "and I don't want to pass it up."
+"I'm glad to hear you say that" Dr. Vivaldi
+unfolds a map of the Underground Kingdom. "I
+made this map from what the Rakas and Archpods have told me. Although the Underground
+Kingdom has an area sixty percent as large as the
+surface of the earth, only a very small portion is
+cool enough to be habitable. Most of the land is
+too hot to set foot on. It is the molten red rock,
+you know, that provides the reddish glow that
+lights this dim world. If it were not for the tremendous cooling effect of the Black Sun, life could
+not exist here."
+Sometimes Dr. Vivaldi gets too scientific for
+you. "Where do you think we should explore?"
+you ask.
+"There are three areas that fascinate me
+equally," she answers, "so I'll let you choose
+among them. To the west are the Weightless
+Peaks, where you become lighter and lighter, the
+higher you climb. To the south are the Hills of
+Diamonds. The Archpods are afraid to go there.
+They say it is too close to what they call the Lair of
+the Ghost Wolf."
+"What lies across the Great River?" you ask.
+"Beyond Rakmara."
+"The Shining Mountains. There we may find
+creatures whom the Archpods call the Flying
+Clera. They are great birds, who may be the true
+rulers of the Underground Kingdom—higher
+even than humans on the evolutionary scale.
+What would you prefer?"
+If you decide to explore the Weightless Peaks,
+turn to page 85.
+If you decide to go to the Hills of Diamonds,
+turn to page 88.
+If you decide to explore the Shining Mountains,
+turn to page 36.""")
+    
+    page = ask_page_extra(36, 85, 88)
+    if page == 36 :
+    	page36()
+    elif page == 85 :
+    	page85()
+    elif page == 88 :
+    	page88()
+        
+def page36() :
+    """Pages 36, 92, 93, 98, and 69 - Ending"""
+    print("""
+You and Dr. Vivaldi cross the Great River and
+start your trek to the Shining Mountains. Along
+the way your guide, Mopur, brings back mountain game, breadbush, and tanga.
+The air seems lighter and brighter than in the
+valley of the Great River. Never have you felt so
+happy as you do right now—hiking through the
+Shining Mountains.
+But your Archpod guide grumbles and frets.
+He blinks and rubs his eyes.
+"I think I know why the Archpods and Rakas
+avoid this beautiful land," says Dr. Vivaldi. "They
+are conditioned to the dim red light of the Great
+River valley. The broad daylight here bothers
+Mopur as much as it would bother us to live in
+semidarkness."
+"Why is it so bright—?"
+You are interrupted by cries from Mopur.
+"Clera! The Flying Clera!"
+Craning your neck, you see several great birdlike creatures swooping across the sky.
+"They are like nothing that has ever lived on
+the surface," says Dr. Vivaldi. "They may have
+evolved on some other planet."
+You fall silent as the music of the Flying Clera
+begins—a great chorus you hear not only with
+your ears, but with your whole body.
+Like you, Dr. Vivaldi seems hypnotized. "They
+sound truly angelic," she says.
+But Mopur tugs at your sleeves. "This is not the
+place for us," he says. "We are not ready."
+"I have a strong feeling that we must turn
+back," says Dr. Vivaldi.
+"Yes," you say, "I have the same feeling. Some
+force is pulling us back."
+Dr. Vivaldi's gaze is fixed on the Shining Mountains. "The Flying Clera are a very advanced
+species," she explains. "They have the ability to
+project their feelings onto us. Their presence and
+purpose here is a mystery that I suspect we are
+not yet ready to understand, but I feel certain that
+they represent a force of good in the universe."
+"If the Flying Clera are so advanced," you say,
+"why don't they rule the Underground Kingdom?"
+Dr. Vivaldi smiles. "I don't know, but I would
+guess that not wanting to rule others is part of
+being advanced."
+At that moment you are overcome by a strong
+desire to return home, to the surface of the earth.
+You exchange glances with Dr. Vivaldi. "Do you
+have the same feeling I do?" you ask.
+She nods and motions you to follow.
+"We mustn't waste time," says Dr. Vivaldi.
+"The Bottomless Crevasse closes a bit more every
+day."
+Led by the Archpod guide, you begin the long
+trek back to the Great River.
+Six tides have passed before your party descends the mountain trail into the valley of the
+Great River. You are eager to get back to the
+Bottomless Crevasse—your only hope of returning to the surface of the earth and home. As you
+strain your eyes, looking for the Raka village, you
+see two figures headed toward you up the trail.
+They're human!
+"Can it be?" you cry.
+Dr. Vivaldi stares through her mini-binoculars.
+"No doubt about it," she says, "Larsen and
+Sneed! They made it here alive!"
+You're glad that your friends are still alive, and
+you hurry to meet them. A few minutes later you
+are exchanging stories of your adventures in the
+Underground Kingdom. But Larsen and Sneed
+do not seem happy.
+"Is anything wrong?" Dr. Vivaldi finally asks
+them.
+"I'm afraid so," Larsen replies. "We've just
+inspected the Bottomless Crevasse. The glacier
+has sealed it tight. We are trapped here forever!"
+"We'll never get home now," you say.
+"That's the way it looks," says Larsen. "Like it
+or not, we're pioneers. The only thing for us to do
+is to make the best of our lives in this new world."
+"That's not good enough for me," says Dr.
+Vivaldi. "We're going to find a way out of here!"
+She looks at you with a broad smile. "Right?"
+"Right," you answer.""", the_end)
+  
+def page88() :
+    """Pages 88 and 91"""
+    print("""
+Certainly the Hills of Diamonds must be an
+amazing sight And, if you ever do make it back to
+the surface, it wouldn't hurt to have a few dozen
+diamonds in your pockets—you could be rich for
+life!
+The Archpods provide you and Dr. Vivaldi with
+their largest boat for the trip down the Great River
+to the diamond hills.
+After a journey of six tides, you hear a roaring
+up ahead. The Archpods quickly beach the boat.
+"We can go no farther," the leader tells you.
+"There are deep canyons and fierce rapids
+ahead. We must go on foot across the field of
+white clay."
+You soon find that the white clay is extremely
+hot. Your feet would burn up were it not for the
+light gravity of the underworld that permits you to
+race across the field in great leaps.
+Finally you reach cooler ground. Ahead of you
+is a dazzling vision: dozens of little hills of brilliant
+diamonds!
+"Look at all those diamonds," you say. "I'm
+surprised the Archpods haven't already taken
+them."
+"Villa tarem, zaark!" One of the Archpods is
+screaming. Several of them point to the north.
+"Tarem Agax!"
+You can't see anything unusual, but the Archpods are deserting you, racing back across the
+field.
+"What's going on? Do you see anything?" you
+ask Dr. Vivaldi.
+She shakes her head, seemingly as confused as
+you are. "It must be the ghost wolf. What we are
+witnessing may be more interesting than the diamond hills themselves. We msay be in the presence of a life force that the Archpods can see but
+we can't Or maybe what they see is an illusion,
+and we are right in thinking nothing is there. This
+is something that has always interested me: different realities for different observers."
+"I don't think we have time to figure it out
+now," you say.
+"You may be right," Dr. Vivaldi admits. "In any
+event, I would guess that the Archpods have good
+reasons for their fears. Are you willing to risk
+continuing on to the Hills of Diamonds, or do you
+want to turn back?"
+If you say you want to continue,
+turn to page 94.
+If you say you want to turn back,
+turn to page 97.""")
+    
+    page = ask_page(94, 97)
+    if page == 94 :
+    	page94()
+    elif page == 97 :
+    	page97()
 
+
+def page85() :
+    """Page 85, 87, and 106 - Ending"""
+    print(page87_mountain)
+    print("""
+A few tides later you and Dr. Vivaldi set out for
+the Weightless Peaks. With you is a young Archpod named Katu, chosen because she speaks
+your language.
+On the trek from the Archpod village to the
+Weightless Peaks, Katu tells you the legend of the
+Archpods who traveled through a shaft that led to
+a new universe. Few Archpods believed there
+could be such a place. Most of them thought that
+the earth was infinitely thick, that nothing could
+lie beyond it. "Now that human beings have arrived, we know that there is a whole new world
+right under our feet. We call your world the
+Nether World," she says. "We are curious about
+it. But we are also afraid of it, and of its creatures
+who could destroy us."
+"Sometimes we human beings are afraid of
+ourselves," you reply.
+After hiking for fourteen tides, you begin to
+climb—first gentle hills, then steep mountains.
+You tire under the weight of your pack, but Dr.
+Vivaldi urges you on. "It will soon be easier," she
+says. And she is proven correct, for as you struggle up the next steep hill, you feel your pack
+growing lighter, and you feel lighter too. Ahead of
+you, Katu is bounding up the higher peaks like a
+mountain gazelle.""")
+    print(page87_mountain) # This is where page 87 starts
+    print("""
+"Now you can see," says Dr. Vivaldi, "how on
+the Weightless Peaks the higher you go, the
+lighter you'll get Look!" She points to the highest
+peak of all. Its top is a spire jutting into the sky. A
+thin plume of smoke rises from the top.
+"It must be a volcano," you say.
+"No," says Dr. Vivaldi. "Something else is
+going on. The mountain's gravity at its peak is so
+weak that dust is being pulled off by the tremendous gravity of the Black Sun."
+"I bet I only weigh five or six pounds," you say.
+"I could easily climb to the top of that spire."
+"Better not," says Dr. Vivaldi.
+You realize that if you're so light, the huge
+boulders around you can't weigh very much either. You decide to test your theory. You nudge a
+boulder twice your size. It rolls into another boulder. Then above you, Katu screams, "Avalanche!"
+It's an avalanche all right, but the boulders are
+rolling up the mountain! Panicked, you run
+toward Katu. The boulders are coming right at
+you. At near zero gravity they're being pulled
+toward the Black Sun.
+"You've got to run down!" Dr. Vivaldi shouts.
+But the boulders have cut off your escape. The
+only thing you can do is run up the mountain,
+trying to keep out of their path. You're running
+higher and faster, leaping fifty feet at a time.
+Ahead of you, Katu flies off the mountain. Before
+you can stop yourself your feet lose touch with
+the ground, and you're in the air, being swept
+higher and higher, straight toward the Black Sun!
+You've read that a black hole might somehow
+be an entrance to another universe. If only that
+were possible! It's your only chance once you
+reach the Black Sun. A chance in a million
+maybe, but still a chance . . .""", the_end)
+  
+def page94() :
+    """Pages 94 and 95"""
+    print("""
+"Let's get to those diamonds," you cry. And
+you run toward the points of sparkling white light.
+At the same time you begin choking on thick
+sulphurous fumes. Behind you, thunder rumbles
+from the ground!
+Dr. Vivaldi has reached the first hill of diamonds. "They're the real thing!" she calls, sifting
+them through her hands. "Within a few yards of
+us are more diamonds than are worn by all the
+people on earth!"
+"Look!" you shout, for now the fields of white
+clay are bubbling like boiling soup. Pale yellow
+gases rise from cracks in the ground.
+"We are trapped." Dr. Vivaldi's voice sounds
+far away. "By the time the claybeds stop erupting,
+these fumes will. . .put...us...to.. . sleep."
+She coughs and staggers a few feet up a small hill
+of diamonds. "Quick, over here!" she calls.
+Gasping, you stumble up the hill and collapse
+in a mound of diamonds. Dr. Vivaldi breathes
+deeply. "We're safe for the moment This hill is
+well above the toxic gases." Her voice is drowned
+out by the ground thunder.
+"It looks like we're stuck here with all these
+millions of diamonds," you say.
+"Maybe not," replies Dr. Vivaldi. "The eruptions are quite localized. The gases are rising, but
+I think we can make it across the deadly strip of
+clay—it's less than a hundred feet, I'd guess.
+There's only one way to do it - take a deep breath
+and run as fast as you can. Don't breathe until
+you absolutely have to. Are you willing to try?"
+If you're willing to run for it, turn to page 101.
+If not, turn to page 102.""")
+
+    page = ask_page(101, 102)
+    if page == 101 :
+    	page101()
+    elif page == 102 :
+        page102()
+      
+def page97() :
+    """Pages 97 and 103 - Ending"""
+    print("""
+"I don't believe the Archpods are running from
+nothing," you say. "Let's get out of here!"
+"OK!" Dr. Vivaldi starts back across the field of
+white clay, and you are right behind her.
+Running as fast as you can, still loaded down
+by your pack, you feel a rumbling beneath your
+feet. The ground begins to split apart. Great
+slivers of clay are heaved up. Wide cracks open
+around you. You think back to when you fell into
+the Bottomless Crevasse in Greenland. This time
+there may be no escape.
+You see Dr. Vivaldi crawling on her hands and
+knees, trying to work her way from the edge of a
+crevice. The ground is shaking so hard you can
+no longer stand. The air is filled with yellowish
+haze as sulphurous fumes escape from beneath
+the surface. Looking up, you see the blurred gray
+form of a wolf looming as large as a mountain,
+crowding out half the sky! Its bared, curving teeth
+are like rows of elephant tusks. Its hot breath takes
+your breath away, and the red world around you
+goes black.
+You are lying on a hammock woven of fine
+clima vines. You feel flushed and feverish, yet
+happy: you're alive! Dr. Vivaldi is beside you. She
+brushes a cool, wet cloth across your forehead.
+"Where are we?" you ask. "How did we get
+out of there? Did you see the ghost wolf?"
+"We're back with the Archpods," Dr. Vivaldi
+says, smiling. "And I did see a great beast with
+tongues of fire, but in truth there was no wolf, nor
+any other beast And the cracks in the field were
+only a few inches wide, just wide enough to
+release a poisonous gas from beneath the
+ground. A few whiffs of it was enough to make us
+hallucinate and have the most horrible nightmares. It's fascinating that the gas causes such a
+specific common vision—I'd like to research this
+some more. In any event, we were lucky to be
+close to the edge when I realized what was happening, I was able to pull you away so you could
+get fresh air."
+"Thanks," you say. "After this I'm not going to
+be afraid of anything in the Underground Kingdom."
+"That's good," she replies, "because we still
+have a whole new world to explore!"
+""", the_end)
+    
+def page102() :
+    """Page 102 - Ending"""
+    print("""
+"I'm worried we won't make it," you say.
+"Maybe the eruptions will end soon, if we just
+wait here awhile."
+"Maybe so," Dr. Vivaldi observes without looking at you. "And maybe it will get worse."
+The two of you sit, waiting. Soon a breeze
+begins to blow. A minute later you are coughing
+and sputtering as the toxic gases rise over your
+hill. You try not to breathe more than you can
+help, but your vision blurs and your head spins.
+You can't even sit up. .. .
+It's strange. Diamonds are the hardest substance in the world; yet, if they are several feet
+deep and you lie down on them, they make a soft
+bed. And so the end comes easily for you.""", the_end)
+
+    
+def page101() :
+    """Pages 101 and 108 - True Ending"""
+    print("""
+"Let's run for it!" you shout.
+Dr. Vivaldi scans the bubbling fields of clay. "I
+think I know the best direction to run, so I'll go
+first, and you follow." You can just barely hear her
+voice. "Remember to hold your breath, and don't
+forget to . . . " Her voice is cut off by more
+thunder as she races across the white clay.
+What was she trying to tell you not to forget?
+No more time to think! You take a deep breath
+and run!
+
+You made it!
+Across the fields of white clay and safely back
+to the land of the Archpods.
+And, if you remembered to fill your pockets
+with diamonds before you ran across the field of
+white clay, you're very rich! Congratulations!""", the_end)
+    
+
+############################## Start of the Program ##############################
+
+# Show the title and author
+print(title_art)
+
+# Just to help manage the large amount of text
+input("Press enter to continue")
+# Give a little background
+intropage()
+
+input("Press enter to start")
+# Actually start the book
 page1()
+
+# Stop before ending, so if the file is opened people can see the end before it closes
+input("\nPress enter to exit")
