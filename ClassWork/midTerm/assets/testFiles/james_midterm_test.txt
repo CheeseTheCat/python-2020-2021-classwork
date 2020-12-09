@@ -1,0 +1,161 @@
+James Hooper
+Question 1 Python basics
+What is Python?
+A programming Language
+A Lizard
+A Hype Text Markup Language
+None of the Above
+1
+Python is a programing language.
+Question 2 Printing
+Which of the following would print the string "Hello World"?
+print("Hello World")
+print "Hello World"
+print(Hello World)
+None of the Above
+1
+print("Hello World") would correctly display "Hello World".
+Question 3 Data Types
+If x = 3 What data type would x be?
+Integer
+Boolean
+Float
+String
+1
+x would be an Integer.
+Question 4 Printing
+Which of the following correctly concatenates two different strings in a print statment?
+print("Hello " + "World")
+Print("THIS","IS","THE","WRONG","ANSWER")
+print(Hello + World)
+PRINT("Hello " + "World")
+1
+Option 1 would be correct due to not haveing a syntax error.
+Question 5 Lists & Tuples
+Which of the following correctly assigns a variable to a list? NOT a tuple.
+list1 = ["Thing 1","Thing 2","Thing 3"]
+list2 = "Thing 1","Thing 2","Thing 3"
+list3 = ("Thing 1","Thing 2","Thing 3")
+None of these are lists
+1
+Option 1 would correctly assign a variable to a list.
+Question 6 Lists & Tuples
+Which of the following correctly assigns a variable to a tuple? NOT a list.
+tuple1 = ("Thing 1","Thing 2","Thing 3")
+tuple2 = "Thing 1","Thing 2","Thing 3"
+tuple3 = ["Thing 1","Thing 2","Thing 3"]
+4 None of these are tuples
+1
+Option 1 would correctly assign a variable to a tuple.
+Question 7 If statments
+When useing If statments how do you specify specific code to run if it is true?
+You indent the code you want to run
+You capitalize the code
+You you indent the first line only
+None of these are correct
+1
+Option 1 would be correct because after the If statment the following code you want to run would be indented.
+Question 8 Spacing
+How many spaces is the standard indent in our classroom?
+4 spaces
+2 spaces
+6 spaces
+3 spaces
+1
+We indent our code with four spaces
+Question 9 Boolean Operators
+What is a Boolean Operator?
+A True or False statement
+A if then statement
+A Mathmatical operator
+None of the Above
+1
+A Boolean Operator is a True or False statement
+Question 10 Variables
+Which one of these is a valid variable?
+pizza
+print
+for
+valid variable
+1
+pizza is a valid variable it does not have a space and is not already used by python, it also tastes good.
+Question 11 Special Characters
+Should you put special characters directly into your code? (Infinity, Omega, Copywrite symbols, ect..)
+No
+Yes
+when nameing a variable
+when creating a class
+1
+You should not put special characters into your code because python would not recognize them.
+Question 12 Functions
+What is a Function?
+A block of code you can use later in your program
+A series of mathmaticle operations to get a specific output
+Some language arts thing you don't know about
+None of the Above
+1
+Functions are blocks of code that can be use later in your program.
+Question 13 History
+What was python named after
+Monty Python
+The Snake Python
+Some lizard thing
+None of the Above
+1
+The programming language Python was named afer Monty Python
+Question 14 Uses
+Can you make games with python code?
+Obveously yes
+No
+You can create small scripts for games but not entire games
+None of the Above
+1
+You can create fully functional games using only python code.
+Question 15 Functions
+Is this function created correctly? make_pizza():
+Yes its fine other than contents
+No it will have a sintax error
+No that is a variable
+None of the Above
+1
+There is nothing wrong with this function other than it haveing no contents.
+Question 16 Bugs
+Is there a syntax error in this code? burger = input("what is your favorite burger?"
+Yes your missing a Parentheses
+Yes your missing a Quote
+No this code is fine
+No but there is a logical error
+1
+The code would have a syntax error because its missing a parentheses.
+Question 17 Bugs
+Is there a logical error in this code? if 1 < 0:
+Yes have you ever taken math?
+No nothing is wrong
+No but there is a syntax error
+None of the Above
+1
+well obvioulsy 1 is alwas greater than 0 so there is a logical error in the code.
+Question 18 Learning
+Is python a good language to learn for beginer programmers?
+Yes its simpler than other languages and easier to read
+No its the most complicated language in the world
+Python is a programming language?
+None of the Above
+1
+Python is a very simple language and is great for beginer programmers.
+Question 19 Terra Tech
+Which corporation do you start with in Terra Tech
+GSO
+GEO Corp
+Venture
+Hawk Eye
+1
+GSO is the starting corporation in Terra Tech (You should check out Terra Tech if you haven't).
+Question 20 Scrap Mechanic
+How many shots from a spud gun does it take to kill a haybot?
+3(head), 4(not head)
+1(head), 2(not head)
+always 2
+You can't kill haybots with a spudgun
+1
+It take three headshots or four shots anywhere else to kill a haybot (This is some Scrap Mechanic Trivia).
