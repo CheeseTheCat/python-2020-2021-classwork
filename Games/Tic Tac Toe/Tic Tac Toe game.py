@@ -21,11 +21,11 @@ def display_instruct():
     You will make your move known by entering a number, 0 - 8.
     the number will correspond to the board postision a s illustrated:
 
-                0 | 1 | 2
-                ---------
-                3 | 4 | 5
-                ---------
-                6 | 7 | 8
+                \t0 | 1 | 2
+                \t---------
+                \t3 | 4 | 5
+                \t---------
+                \t6 | 7 | 8
 
     The game will begin soon
 """)
@@ -81,12 +81,62 @@ def display_board(board):
     print("\t",board[6],"|",board[7],"|",board[8])
     print()
 
+def leagal_moves(board):
+    moves = []
+    for square in range(NUM_SQUARES):
+        if board[square] == EMPTY:
+            moves.append(square)
+    return moves
+
 def human_move(board,human):
     """Get human move. to use (move = human_move(board,human))"""
+    legal = leagal_moves(board)
     move = None
-    while move == None:
+    while move not in legal:
         move = ask_number("Where will you move? (0 - 8):",0,NUM_SQUARES)
+        if move not in legal:
+            print("\nThat square is already occupied, Choose another.\n")
     return move
+
+def winner(board):
+    """Determine the game winner."""
+    WAYS_TO_WIN = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 4, 8), (2, 4, 6), (0, 3, 6), (2, 5, 8), (1, 4, 7))
+    for row in WAYS_TO_WIN:
+        if board[row[0]] == board[row[1]] == board[row[2]] != EMPTY:
+            winner = board[row[0]]
+            return winner
+    if EMPTY not in board:
+        return TIE
+    return None
+
+def computer_move(board,computer,human):
+    """Make computer move"""
+    cboard = board[:]
+    BEST_MOVES = (4, 0, 2, 6, 8, 1, 3, 5, 7)
+    print("I'm taking square", end=" ")
+    # if computer can win, take that move
+    for move in leagal_moves(board):
+        cboard[move] = computer
+        if winner(cboard) == computer:
+            print(move)
+            return move
+        # done checking this move, undo it
+        cboard[move] = EMPTY
+        
+    #if human can win, block that move
+    for move in leagal_moves(board):
+        cboard[move] = human
+        if winner(cboard) == human:
+            print(move)
+            return move
+        # done checking this move, undo it
+        cboard[move] = EMPTY
+        
+    #since no one can win on the next move, pick best open square
+    for move in BEST_MOVES:
+        if move in leagal_moves(board):
+            print(move)
+            return move
 
 #main Game
 def main():
@@ -94,10 +144,24 @@ def main():
     turn = X
     computer,human = pieces()
     board = new_board()
-    while True:        
+    display_board(board)
+    
+    while not winner(board):
+        if turn == human:
+            move = human_move(board,human)
+            board[move]=human
+        else:
+            move = computer_move(board, computer, human)
+            board[move] = computer
         display_board(board)
-        move = human_move(board,human)
-        board[move]=human
+        turn = next_turn(turn)
+        
+        
+        
+    win = winner(board)
+        
+    display_board(board)
+    print(str(win),"Won!\n\n")
 #**********************************************************************
 
 main()
