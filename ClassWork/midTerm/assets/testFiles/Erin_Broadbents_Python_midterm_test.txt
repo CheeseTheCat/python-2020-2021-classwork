@@ -1,0 +1,161 @@
+Erin Broadbents Python midterm test
+Defining functions
+How would you define the function turn
+Define turn:
+turn = define:
+def(turn):
+def turn():
+4
+To define functions you write def name of function and then parentheses 
+Print statements
+How would you print the string “hello world”
+print (hello world)
+Print (hello world)
+print (“hello world”)
+Print (“hello world”)
+3
+The print statement cannot be capitalized and it needs to be in a string
+Data type’s
+What are the four data types
+String, float, integer, and boolean
+Float, number, boolean, and String
+Boolean, words, integer, and float
+Decimal, float, integer, and boolean
+1
+These are the correct names for them the others are descriptions of the data type
+How do you change data types
+How would you change the variable number = (“42”) into an integer
+int(42)
+int(number)
+integer(number)
+integer(42)
+2
+Int is the way to change different data types into integers and the variable name is number
+Python history
+Who created the python language
+Monty Python
+Bill gates
+The black knight
+Guido Van Rossum
+4
+Monty Python and The Black Knight are both from the show it is based off of and Bill Gates was the co-founder of microsoft
+Python math
+If you want to print out an answer to the problem 2*4 how would you write it
+Print(2*4)
+print(“2*4”)
+print(2*4)
+All of these will work
+3
+Print doesn’t work if the p is capitalized and it doesn’t work if the numbers are a string
+Floats
+Which one will be stored as a float in the variable boat
+boat = 0.0
+BOAT = 0.0
+Boat = 0.0
+baot = 0.0
+1
+The variable I asked for was boat and 1 is the only one that is correctly written as boat
+Imports
+How do you import random into your program
+import = random
+import random
+import.random
+random import
+2
+You only have to type import and what you are importing 
+Help info
+How do you get information on the import pickle in your program
+HELP (PICKLE)
+Help  = pickle
+i_need_help (pickle)
+help (pickle)
+4
+It doesn’t need to be capitalized and you only need the help (and the import you want info about)
+how to get data types
+how would you print the data type of the varible num
+print.type(num)
+type(print(num))
+print(type(num))
+none of these are correct
+3
+print goes first and then type then the varible name which is num
+if and else
+elif stands for else if
+true
+false 
+
+
+1
+it's an abrivated verison of else if
+varible names 
+which of these is a good varible name
+11kids
+kids_11
+kids 11
+11_kids
+2
+numbers can't be first and spaces cannot be in varible names
+what can you do with python
+which of the following can be made with python
+a video game
+a text adventure
+a trivia game
+all  of the above
+4 
+we  have made all of these in class so far 
+comments in the code
+which symbol is used to comment 
+@
+&
+#
+*
+3
+this is the symbol used to comment things out and if you use alt 3 it will comment out a section
+Pythons location
+where can you find python to download it onto your computer
+The python website
+The amazon
+The nearest field
+none of these
+1
+this is where we downloaded it from for the classrooms computers
+Ascii
+what is the word that usually comes after Ascii
+Pie
+Art
+language
+none of these are right
+2
+Ascii are is the art style we used for our hangman game and our oregon trail menu
+the cost of python
+how much does python cost
+$5.00
+$2.50
+$1.25
+free
+4
+we got python for free on the school computers
+pyhton history
+what year did the first python come out
+1800
+1900
+1991
+2020
+3
+the first computer didn't come out until 1943
+indents
+What is the short-cut to indent a section of code
+ctrl ]
+ctrl }
+ctrl )
+ctrl :
+1
+ctrl ] is the correct way to indent the highlighted text 
+Using python
+python needs years of experiance before you can start using it
+True
+False
+
+
+2
+we started pyhton with little to none experiance

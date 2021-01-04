@@ -106,7 +106,7 @@ def create_report_card(name,score,total_questions,test_time):
         
 def main():
     ######################################################################################################################
-    file = open_file("james_midterm_test.txt","r")# will need to change file name to match the test that your taking
+    file = open_file("Erin_Broadbents_Python_midterm_test.txt","r")# will need to change file name to match the test that your taking
     ######################################################################################################################
     title = next_line(file)
     name, test_time = get_name()

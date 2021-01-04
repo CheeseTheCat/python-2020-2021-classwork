@@ -1,0 +1,5 @@
+name =James Hooper Midterm
+Time taken = 12/09 09:20
+Number Correct = 19
+% Correct = 95.0
+Letter Grade = A
