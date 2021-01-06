@@ -6,7 +6,7 @@ import random
 class Card(object):
     RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
     SUITS = ["♠", "♣", "♢", "♡"]
-    def __init__(self,suit,rank):
+    def __init__(self,rank,suit):
 
         self.suit = suit
         self.rank = rank
@@ -64,7 +64,7 @@ class Deck(Hand):
                     top_card = self.cards[0]
                     self.give(top_card,hand)
                 else:
-                    print("Out of cards clearing hands and reshuffleing")
+                    print("Out of cards clearing hands and reshuffling")
                     self.clear()
                     self.populate()
                     self.shuffle()
@@ -72,9 +72,39 @@ class Deck(Hand):
                         hand.clear()
                     self.deal()
 
+class Pos_Card(Card):
+    def __init__(self, rank, suit):
+        super(Pos_Card, self).__init__(rank, suit)
+        self.faceup = True
 
-deck = Deck()
-deck.populate()
-deck.shuffle()
-print(deck)
-print(len(deck.cards))
+    def flip(self):
+        self.faceup = not self.faceup
+
+    def __str__(self):
+        if self.faceup:
+            #rep = super(Pos_Card,self).__str__()
+            rep = str.format("""
+                +----------+
+                | {1}{0:>2}      |
+                |          |
+                |          |
+                |          |
+                |          |
+                |          |
+                |      {0:2}{1} |
+                +----------+
+                    """, self.rank, self.suit)
+        else:
+            rep = """
+                +----------+
+                |##########|
+                |##########|
+                |##########|
+                |##########|
+                |##########|
+                |##########|
+                |##########|
+                +----------+
+                """
+        return rep
+

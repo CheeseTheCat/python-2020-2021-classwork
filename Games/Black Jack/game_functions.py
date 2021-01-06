@@ -115,6 +115,26 @@ def get_number(question, min, max):
 class Player(object):
     def __init__(self, name, score=0):
         self.name = name
-        self.score = score
+        self.score = Score()
         self.lives = 3
 
+class Score(object):
+    def __init__(self):
+        self.value = 0
+        self.stepvalue = 10
+
+    def add_to(self,itemid):
+        for i in range(itemid):
+            self.value += self.stepvalue
+
+    def take_from(self,itemid):
+        can_be_under_0 = False
+        for i in range(itemid):
+            self.value -= self.stepvalue
+            if self.value < 0 and can_be_under_0 == False:
+                self.value = 0
+
+
+if __name__ == "__main__":
+    print("You ran this module directly (and did not 'import' it).")
+    input("\n\nPress the enter key to exit.")
