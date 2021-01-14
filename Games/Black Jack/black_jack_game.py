@@ -56,7 +56,7 @@ class BJ_Hand(pc.Hand):
                 has_ace = True
 
         # if hand contains Ace and total is low enough, treat Ace as 11
-        if has_ace and total <= 11:
+        if has_ace and self.total <= 11:
             t += 10 #  add only 10 since we've already added 1 for the Ace
         return t
 
@@ -87,10 +87,10 @@ class BJ_Dealer(BJ_Hand):
 
 class Game(object):
     def __init__(self,names):
-        self.deck = BJ_Deck
+        self.deck = BJ_Deck()
         self.deck.populate()
         self.deck.shuffle()
-        self.dealer = BJ_Dealer("The Dealer")
+        self.dealer = BJ_Dealer("Dealer Potato")
         self.players = []
         for name in names:
             player = BJ_Player(name)
@@ -104,13 +104,59 @@ class Game(object):
                 sp.append(player)
         return sp
 
+    def __additional_cards(self,player):
+        while not player.is_busted() and player.is_drawing():
+            self.deck.deal([player],1)
+            if player.is_busted():
+                player.bust()
 
+    def play(self):
+        # deal 2 cards to all players and dealer
+        self.deck.deal(self.players + [self.dealer], 2)
+        self.dealer.flip_first_card()
+        print(self.dealer)
 
-# testing Area
-deck = BJ_Deck()
-deck.populate()
-deck.shuffle()
+        for player in self.players:
+            print(player)
+            self.__additional_cards(player)
 
-card = deck.cards[0]
-print(card)
-print(card.value)
+        # reveal dealer's first card
+        self.dealer.flip_first_card()
+        if not self.still_playing:
+            # since all players have busted, just show the dealer's hand
+            print(self.dealer)
+        else:
+            #deal additional cards to the dealer
+            print(self.dealer)
+            self.__additional_cards(self.dealer)
+            if self.dealer.is_busted():
+                for player in self.still_playing:
+                    player.win()
+            else:
+                for player in self.still_playing:
+                    if player.total > self.dealer.total:
+                        player.win()
+                    elif player.total < self.dealer.total:
+                        player.lose()
+                    else:
+                        player.push()
+        for player in self.players:
+            player.clear()
+        self.dealer.clear()
+
+def main():
+    print("\t\tWelcome to Blackjack!\n")
+
+    names = []
+    num_players = gf.ask_number("How many players? (1 - 7): ", low = 1, high = 8)
+    for i in range(num_players):
+        gf.get_name("Enter player name: ")
+        names.append(names)
+    game = Game(names)
+
+    play = None
+    while play != "n":
+        game.play()
+        play = gf.ask_yes_no("\nDo you want to play again?: ")
+
+main()
