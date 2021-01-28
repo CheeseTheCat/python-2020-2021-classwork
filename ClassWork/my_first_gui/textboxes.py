@@ -57,13 +57,16 @@ class App(Frame):
         self.output.insert(0.0,msg)
 
     def submit2(self):
+        msg = ""
         username = self.user_tb.get()
         password = self.pass_tb.get()
         if username.lower() not in self.usernames and self.trys <= 5:
-            self.usernames.append(username)
+            self.usernames.append(username.lower())
             self.passwords.append(password)
         else:
             msg = "Username is taken"
+        self.output.delete(0.0, END)
+        self.output.insert(0.0, msg)
 
 
 def main():
