@@ -75,7 +75,7 @@ class App(Frame):
 
 def main():
     root = Tk()
-    root.title("password entry")
+    root.title("this is a window")
     root.geometry("643x500")
     root.configure(bg = "white")
     app = App(root)
