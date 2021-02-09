@@ -18,7 +18,6 @@ class App(Frame):
         pass
 
 
-
 def main():
     root = Tk()
     root.title(TITLE)
