@@ -13,7 +13,7 @@ class App(Frame):
     def __init__(self,master):
         super(App, self).__init__(master)
         self.index= 0
-        self.name1 = ""
+        self.name1 = "Yoda"
         self.noun1 = ""
         self.name2 = ""
         self.noun2 = ""
@@ -28,49 +28,8 @@ class App(Frame):
         self.prompt_list = ["Give me a name. " ,"Give me noun. ","Give me another name. ", "Give me a noun. ",
                             "Give me an adjective. ","Give me an noun. ","Give me a long name. ",
                             "Give me a wierd name. ","Give me a adjective. ","Give me a scary name. ",
-                            "Give me a noun. "]
-
-        self.grid()
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.lbl=Label(self,text=self.prompt_list[self.index])
-        self.lbl.grid(row=0,column=0)
-        self.txtentry=Entry(self, text = "")
-        self.txtentry.grid(row=1,column=0)
-        self.next=Button(self, text="Next", command=self.onNext).grid(row=2, column=0)
-
-
-
-        self.output = Text(self, height=25, width=37)
-        self.output.grid(row=3)
-
-
-    def onNext(self):
-        if self.index < 11:
-            text=self.txtentry.get()
-            self.word_list[self.index] = text
-            self.index+=1
-            self.lbl.config(text=self.prompt_list[self.index])
-        else:
-            pass
-
-
-
-def main():
-    root = Tk()
-    root.title("MadLib")
-    root.geometry(str(WIDTH)+"x"+str(HEIGHT))
-    root.configure(bg = BACKGROUND)
-    app = App(root)
-
-    root.mainloop()
-
-main()
-
-#Credit https://starwars.fandom.com/wiki/Opening_crawl
-
-story=[str.format("""
+                            "Give me a noun. ","Story Time"]
+        self.story = [str.format("""
 It is a dark time for the
 {0}. Although the {1} has been destroyed,
 {2} troops have driven the
@@ -90,4 +49,49 @@ obsessed with finding young
 {6}, has dispatched
 thousands of {10} into
 the far reaches of space....
-""",name1,noun1,name2,noun2,adj1,noun3,name3,name4,adj2,name5,noun4)]
+""", self.word_list[0],self.word_list[1],self.word_list[2],self.word_list[3],self.word_list[4],self.word_list[5],self.word_list[6],self.word_list[7],self.word_list[8],self.word_list[9],self.word_list[10])]
+
+        self.grid()
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.lbl=Label(self,text=self.prompt_list[self.index])
+        self.lbl.grid(row=0,column=0)
+        self.txtentry=Entry(self, text = "")
+        self.txtentry.grid(row=1,column=0)
+        self.next=Button(self, text="Next", command=self.onNext).grid(row=2, column=0)
+
+
+
+        self.output = Text(self, height=25, width=37)
+        self.output.grid(row=3)
+
+
+    def onNext(self):
+        if self.index <= 9:
+            text=self.txtentry.get()
+            if self.txtentry.get() != "":
+                self.word_list[self.index] = text
+            self.index+=1
+            self.lbl.config(text=self.prompt_list[self.index])
+        else:
+            self.index+=1
+            self.lbl.config(text=self.prompt_list[self.index])
+            self.index-=1
+            self.output.delete(0.0, END)
+            self.output.insert(0.0, self.story)
+
+
+
+def main():
+    root = Tk()
+    root.title("MadLib")
+    root.geometry(str(WIDTH)+"x"+str(HEIGHT))
+    root.configure(bg = BACKGROUND)
+    app = App(root)
+
+    root.mainloop()
+
+main()
+
+#Credit https://starwars.fandom.com/wiki/Opening_crawl
