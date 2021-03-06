@@ -70,7 +70,7 @@ class Npc(pg.sprite.Sprite):
             self.rect.centerx = r.randint(30,(WIDTH-30))
             self.speedy = r.randint(4, 10)
             spwn_chance = r.randint(0,50)
-            if spwn_chance >=1:
+            if spwn_chance >=48:
                 spwn_new_Npc()
 
 def spwn_new_Npc():
