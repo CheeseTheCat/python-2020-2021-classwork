@@ -39,14 +39,58 @@ class Player(pg.sprite.Sprite):
         self.rect.centerx = (WIDTH/2)
         self.rect.bottom = (HEIGHT - (HEIGHT*.04))
         self.speedx = 0
+        self.speedy = 0
 
     def update(self):
+        self.speedx = 0
+        self.speedy = 0
+
+        keystate = pg.key.get_pressed()
+        if keystate[pg.K_LEFT] or keystate[pg.K_a]:
+            self.speedx += -5
+        if keystate[pg.K_RIGHT] or keystate[pg.K_d]:
+            self.speedx += 5
+        # if keystate[pg.K_UP] or keystate[pg.K_w]:
+        #     self.speedy += -5
+        # if keystate[pg.K_DOWN] or keystate[pg.K_s]:
+        #     self.speedy += 5
+        # if keystate[pg.K_SPACE]:
+        #     self.shoot()
+
         self.rect.x += self.speedx
+        #self.rect.y += self.speedy
 
         if self.rect.right >= WIDTH:
             self.rect.right = WIDTH
         if self.rect.left <= 0:
             self.rect.left = 0
+        if self.rect.top <= 0:
+            self.rect.top = 0
+        if self.rect.bottom >= HEIGHT:
+            self.rect.bottom = HEIGHT
+
+    def shoot(self):
+        b = Bullet(self.rect.centerx,self.rect.top+1)
+        all_sprites.add(b)
+        bullet_group.add(b)
+
+class Bullet(pg.sprite.Sprite):
+    def __init__(self,x,y):
+        super(Bullet, self).__init__()
+        self.image = pg.Surface((10,30))
+        self.image.fill(CYAN)
+        self.rect = self.image.get_rect()
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speed = -10
+
+    def update(self):
+        self.rect.y += self.speed
+
+        # kill bullet when bottom leaves screen
+        if self.rect.bottom < 0:
+            self.kill()
+
 
 class Npc(pg.sprite.Sprite):
     def __init__(self):
@@ -54,7 +98,7 @@ class Npc(pg.sprite.Sprite):
         self.image = pg.Surface((25, 25))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.centerx = (WIDTH / 2)
+        self.rect.centerx = r.randint(30,(WIDTH-30))
         self.rect.top = (0)
         self.speedx = 0
         self.speedy = r.randint(4,7)
@@ -71,14 +115,12 @@ class Npc(pg.sprite.Sprite):
             self.speedy = r.randint(4, 10)
             spwn_chance = r.randint(0,50)
             if spwn_chance >=48:
-                spwn_new_Npc()
+                self.spwn()
+    def spwn(self):
+        npc = Npc()
+        npc_group.add(npc)
+        all_sprites.add(npc)
 
-def spwn_new_Npc():
-    newnpc = Npc()
-    newnpc.rect.centerx = r.randint(30, (WIDTH - 30))
-    newnpc.speedy = 5
-    all_sprites.add(newnpc)
-    npc_group.add(newnpc)
 #######################################################################################################################
 
 # Initialize pygame and create window
@@ -102,19 +144,22 @@ clock = pg.time.Clock()
 all_sprites = pg.sprite.Group()
 players_group = pg.sprite.Group()
 npc_group = pg.sprite.Group()
+bullet_group = pg.sprite.Group()
 
 #######################################################################################################################
 
 # create game objects
 #######################################################################################################################
 player = Player()
-npc = Npc()
+for i in range(10):
+    npc = Npc()
+    npc_group.add(npc)
 #######################################################################################################################
 
 # add objects to sprite groups
 #######################################################################################################################
 players_group.add(player)
-npc_group.add(npc)
+# npc_group.add(npc)
 
 for i in players_group:
     all_sprites.add(i)
@@ -136,27 +181,32 @@ while Playing:
     #########################
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                player.shoot()
             if event.key == pg.K_ESCAPE:
                 Playing = False
         if event.type == pg.QUIT:
             Playing = False
 
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_d or event.key == pg.K_RIGHT:
-                player.speedx += 5
-            if event.key == pg.K_a or event.key == pg.K_LEFT:
-                player.speedx += -5
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_a or event.key == pg.K_LEFT:
-                player.speedx += 5
-            if event.key == pg.K_d or event.key == pg.K_RIGHT:
-                player.speedx += -5
+
+
 
     #########################
 
     # updates
     #########################
     all_sprites.update()
+
+    # if npc hits player
+    hits = pg.sprite.spritecollide(player,npc_group,True)
+    if hits:
+        npc.spwn()
+        Playing = False
+
+    # bullet hits npc
+    hits = pg.sprite.groupcollide(npc_group,bullet_group,True,True)
+    for hit in hits:
+        npc.spwn()
 
     #########################
 
