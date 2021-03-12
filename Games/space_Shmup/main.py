@@ -3,6 +3,21 @@ import random as r
 import math
 from os import *
 
+# code created by James Hooper
+# art creatged by James hooper
+# background created by Cuzco, image taken from https://opengameart.org/content/space-background
+
+# folder stuff
+#################################################
+game_folder = path.dirname(__file__)
+imgs_folder = path.join(game_folder,"imgs")
+snds_folder = path.join(game_folder, "snds")
+scores_folder = path.join(game_folder, "highscores")
+player_img_folder = path.join(imgs_folder, "player_imgs")
+enemy_img_folder = path.join(imgs_folder, "enemy_imgs")
+background_folder = path.join(imgs_folder, "backgrounds")
+#################################################
+
 # Game constants
 #######################################################################################################################
 HEIGHT = 800
@@ -24,7 +39,6 @@ DARKGREEN = (15,109,0)
 
 
 title = "Shmup"
-total_npcs = 0
 
 #######################################################################################################################
 
@@ -33,9 +47,14 @@ total_npcs = 0
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.image = pg.Surface((50,40))
-        self.image.fill(GREEN)
+        # self.image = pg.Surface((50,40))
+        # self.image.fill(GREEN)
+        self.image = player_img
+        self.image.set_colorkey(BLACK)
+        self.image = pg.transform.scale(player_img,(50,40))
         self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width / 2 * 0.95)
+        pg.draw.circle(self.image, RED, self.rect.center, self.radius)
         self.rect.centerx = (WIDTH/2)
         self.rect.bottom = (HEIGHT - (HEIGHT*.04))
         self.speedx = 0
@@ -54,6 +73,8 @@ class Player(pg.sprite.Sprite):
         #     self.speedy += -5
         # if keystate[pg.K_DOWN] or keystate[pg.K_s]:
         #     self.speedy += 5
+
+        # un comment this for insta fire
         # if keystate[pg.K_SPACE]:
         #     self.shoot()
 
@@ -77,8 +98,11 @@ class Player(pg.sprite.Sprite):
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
         super(Bullet, self).__init__()
-        self.image = pg.Surface((10,30))
-        self.image.fill(CYAN)
+        # self.image = pg.Surface((10,30))
+        # self.image.fill(CYAN)
+        self.image = player_img
+        self.image.set_colorkey(BLACK)
+        self.image = pg.transform.scale(bullet_img, (10, 30))
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
@@ -95,14 +119,16 @@ class Bullet(pg.sprite.Sprite):
 class Npc(pg.sprite.Sprite):
     def __init__(self):
         super(Npc, self).__init__()
-        self.image = pg.Surface((25, 25))
-        self.image.fill(RED)
+        self.image = npc_img
+        self.image.set_colorkey(BLACK)
+        self.image = pg.transform.scale(npc_img,(35,35))
         self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width/2 * 0.70)
+        pg.draw.circle(self.image,RED,self.rect.center,self.radius)
         self.rect.centerx = r.randint(30,(WIDTH-30))
         self.rect.top = (0)
         self.speedx = 0
         self.speedy = r.randint(4,7)
-        self.total_npcs = 1
 
 
     def update(self):
@@ -113,14 +139,39 @@ class Npc(pg.sprite.Sprite):
             self.rect.bottom = -1
             self.rect.centerx = r.randint(30,(WIDTH-30))
             self.speedy = r.randint(4, 10)
-            spwn_chance = r.randint(0,50)
-            if spwn_chance >=48:
-                self.spwn()
+            # spwn_chance = r.randint(0,50)
+            # if spwn_chance >=48:
+            #     self.spwn()
     def spwn(self):
         npc = Npc()
         npc_group.add(npc)
         all_sprites.add(npc)
 
+class Star(pg.sprite.Sprite):
+    def __init__(self):
+        super(Star, self).__init__()
+        self.size = r.randint(1,5)
+        self.image = pg.Surface((self.size, self.size))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = r.randint(0,(WIDTH))
+        self.rect.top = (0)
+        self.speedx = 0
+        self.speedy = r.randint(4,7)
+
+    def update(self):
+        self.rect.y += self.speedy
+
+        if self.rect.top >= HEIGHT:
+            self.kill()
+            # self.rect.bottom = -1
+            # self.rect.centerx = r.randint(30,(WIDTH-30))
+            # self.speedy = r.randint(4, 10)
+
+    def spwnstar(self):
+        star = Star()
+        star_group.add(star)
+        all_sprites.add(star)
 #######################################################################################################################
 
 # Initialize pygame and create window
@@ -136,15 +187,28 @@ clock = pg.time.Clock()
 
 # load imgs
 #######################################################################################################################
+# background img
+background = pg.image.load(path.join(background_folder, "background1.jpg")).convert()
+background = pg.transform.scale(background,(WIDTH,HEIGHT))
+background_rect = background.get_rect()
 
+# player img
+player_img = pg.image.load(path.join(player_img_folder, "player1_ship.png")).convert()
+
+# npc img
+npc_img = pg.image.load(path.join(enemy_img_folder, "enemy1.png"))
+
+# bullet img
+bullet_img = pg.image.load(path.join(player_img_folder, "orange_lazer.png"))
 #######################################################################################################################
 
-# create Sprite goups
+# create Sprite groups
 #######################################################################################################################
 all_sprites = pg.sprite.Group()
 players_group = pg.sprite.Group()
 npc_group = pg.sprite.Group()
 bullet_group = pg.sprite.Group()
+star_group = pg.sprite.Group()
 
 #######################################################################################################################
 
@@ -154,11 +218,14 @@ player = Player()
 for i in range(10):
     npc = Npc()
     npc_group.add(npc)
+star = Star()
+
 #######################################################################################################################
 
 # add objects to sprite groups
 #######################################################################################################################
 players_group.add(player)
+star_group.add(star)
 # npc_group.add(npc)
 
 for i in players_group:
@@ -167,6 +234,8 @@ for i in players_group:
 for i in npc_group:
     all_sprites.add(i)
 
+for i in star_group:
+    all_sprites.add(i)
 #######################################################################################################################
 
 # Game Loop
@@ -189,8 +258,6 @@ while Playing:
             Playing = False
 
 
-
-
     #########################
 
     # updates
@@ -198,21 +265,28 @@ while Playing:
     all_sprites.update()
 
     # if npc hits player
-    hits = pg.sprite.spritecollide(player,npc_group,True)
+    hits = pg.sprite.spritecollide(player,npc_group,True, pg.sprite.collide_circle)
     if hits:
         npc.spwn()
-        Playing = False
+        # uncomment this if you want to end the game when you collide
+        # Playing = False
 
     # bullet hits npc
     hits = pg.sprite.groupcollide(npc_group,bullet_group,True,True)
     for hit in hits:
         npc.spwn()
 
+    # randomly make stars
+    starchance = r.randint(0,75)
+    if starchance >= 60:
+        star.spwnstar()
+
     #########################
 
     # render changes
     #########################
     screen.fill(BLACK)
+    screen.blit(background,background_rect)
     all_sprites.draw(screen)
 
     pg.display.flip()
