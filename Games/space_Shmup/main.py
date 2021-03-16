@@ -39,6 +39,18 @@ DARKGREEN = (15,109,0)
 
 
 title = "Shmup"
+font_name = pg.font.match_font("arial")
+
+#######################################################################################################################
+
+# Game functions
+#######################################################################################################################
+def draw_text(surf,text,size,x,y,color):
+    font = pg.font.Font(font_name,size)
+    text_surface = font.render(text,True,color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x,y)
+    surf.blit(text_surface,text_rect)
 
 #######################################################################################################################
 
@@ -54,7 +66,7 @@ class Player(pg.sprite.Sprite):
         self.image = pg.transform.scale(player_img,(50,40))
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width / 2 * 0.95)
-        pg.draw.circle(self.image, RED, self.rect.center, self.radius)
+        # pg.draw.circle(self.image, RED, self.rect.center, self.radius)
         self.rect.centerx = (WIDTH/2)
         self.rect.bottom = (HEIGHT - (HEIGHT*.04))
         self.speedx = 0
@@ -119,19 +131,38 @@ class Bullet(pg.sprite.Sprite):
 class Npc(pg.sprite.Sprite):
     def __init__(self):
         super(Npc, self).__init__()
+        self.randsize = r.randint(20,70)
         self.image = npc_img
-        self.image.set_colorkey(BLACK)
-        self.image = pg.transform.scale(npc_img,(35,35))
+        self.image_orig = pg.transform.scale(npc_img, (self.randsize, self.randsize))
+        self.image_orig.set_colorkey(BLACK)
+        self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width/2 * 0.70)
-        pg.draw.circle(self.image,RED,self.rect.center,self.radius)
+        # pg.draw.circle(self.image,RED,self.rect.center,self.radius)
         self.rect.centerx = r.randint(30,(WIDTH-30))
-        self.rect.top = (0)
+        self.rect.bottom = (-1)
         self.speedx = 0
-        self.speedy = r.randint(4,7)
+        self.speedy = r.randint(4,6)
+        self.rot = 0
+        self.rot_speed = r.randint(-8,8)
+        self.last_update = pg.time.get_ticks()
 
+    def rotate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 60:
+            self.last_update = now
+            # do the rotation
+            self.rot = (self.rot+self.rot_speed)%360
+            new_image = pg.transform.rotate(self.image_orig, self.rot)
+            old_center = self.rect.center
+            self.image = new_image
+            self.image.set_colorkey(BLACK)
+            self.rect = self.image.get_rect()
+            self.rect.center = old_center
 
     def update(self):
+
+        self.rotate()
         self.rect.y += self.speedy
         self.rect.x += self.speedx
 
@@ -139,9 +170,9 @@ class Npc(pg.sprite.Sprite):
             self.rect.bottom = -1
             self.rect.centerx = r.randint(30,(WIDTH-30))
             self.speedy = r.randint(4, 10)
-            # spwn_chance = r.randint(0,50)
-            # if spwn_chance >=48:
-            #     self.spwn()
+            spwn_chance = r.randint(0,100)
+            if spwn_chance >=100:
+                self.spwn()
     def spwn(self):
         npc = Npc()
         npc_group.add(npc)
@@ -158,6 +189,8 @@ class Star(pg.sprite.Sprite):
         self.rect.top = (0)
         self.speedx = 0
         self.speedy = r.randint(4,7)
+
+
 
     def update(self):
         self.rect.y += self.speedy
@@ -182,6 +215,7 @@ pg.mixer.init()
 screen = pg.display.set_mode((WIDTH,HEIGHT))
 pg.display.set_caption(title)
 clock = pg.time.Clock()
+score = 0
 
 #######################################################################################################################
 
@@ -266,7 +300,8 @@ while Playing:
 
     # if npc hits player
     hits = pg.sprite.spritecollide(player,npc_group,True, pg.sprite.collide_circle)
-    if hits:
+    for hit in hits:
+        score += -100 - hit.radius
         npc.spwn()
         # uncomment this if you want to end the game when you collide
         # Playing = False
@@ -274,7 +309,9 @@ while Playing:
     # bullet hits npc
     hits = pg.sprite.groupcollide(npc_group,bullet_group,True,True)
     for hit in hits:
+        score += 50 - hit.radius
         npc.spwn()
+
 
     # randomly make stars
     starchance = r.randint(0,75)
@@ -288,6 +325,8 @@ while Playing:
     screen.fill(BLACK)
     screen.blit(background,background_rect)
     all_sprites.draw(screen)
+    # draw hud
+    draw_text(screen, "Score: "+str(score),18, WIDTH/2,10,WHITE)
 
     pg.display.flip()
 
