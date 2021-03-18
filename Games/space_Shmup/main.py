@@ -13,9 +13,11 @@ game_folder = path.dirname(__file__)
 imgs_folder = path.join(game_folder,"imgs")
 snds_folder = path.join(game_folder, "snds")
 scores_folder = path.join(game_folder, "highscores")
+# images
 player_img_folder = path.join(imgs_folder, "player_imgs")
 enemy_img_folder = path.join(imgs_folder, "enemy_imgs")
 background_folder = path.join(imgs_folder, "backgrounds")
+
 #################################################
 
 # Game constants
@@ -52,6 +54,16 @@ def draw_text(surf,text,size,x,y,color):
     text_rect.midtop = (x,y)
     surf.blit(text_surface,text_rect)
 
+def drawbar(surf,x,y,pct):
+    if pct <0:
+        pct = 0
+    bar_len = 200
+    bar_height = 40
+    fill = (pct/100)*bar_len
+    outline_rect = pg.Rect(x,y,bar_len,bar_height)
+    fill_rect = pg.Rect(x,y,fill,bar_height)
+    pg.draw.rect(surf,GREEN,fill_rect)
+    pg.draw.rect(surf,WHITE,outline_rect,2)
 #######################################################################################################################
 
 # Game object classes
@@ -59,6 +71,7 @@ def draw_text(surf,text,size,x,y,color):
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
+        self.sheild = 100
         # self.image = pg.Surface((50,40))
         # self.image.fill(GREEN)
         self.image = player_img
@@ -71,6 +84,9 @@ class Player(pg.sprite.Sprite):
         self.rect.bottom = (HEIGHT - (HEIGHT*.04))
         self.speedx = 0
         self.speedy = 0
+        self.shoot_delay = 250
+        self.last_shot = pg.time.get_ticks()
+
 
     def update(self):
         self.speedx = 0
@@ -87,8 +103,10 @@ class Player(pg.sprite.Sprite):
         #     self.speedy += 5
 
         # un comment this for insta fire
-        # if keystate[pg.K_SPACE]:
-        #     self.shoot()
+        if keystate[pg.K_g]:
+            self.shootfast()
+        if keystate[pg.K_SPACE]:
+            self.shoot()
 
         self.rect.x += self.speedx
         #self.rect.y += self.speedy
@@ -103,9 +121,19 @@ class Player(pg.sprite.Sprite):
             self.rect.bottom = HEIGHT
 
     def shoot(self):
+        now = pg.time.get_ticks()
+        if now-self.last_shot > self.shoot_delay:
+            self.last_shot = now
+            b = Bullet(self.rect.centerx,self.rect.top+1)
+            all_sprites.add(b)
+            bullet_group.add(b)
+            shoot_snd.play()
+
+    def shootfast(self):
         b = Bullet(self.rect.centerx,self.rect.top+1)
         all_sprites.add(b)
         bullet_group.add(b)
+        shoot_snd.play()
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
@@ -234,6 +262,18 @@ npc_img = pg.image.load(path.join(enemy_img_folder, "enemy1.png"))
 
 # bullet img
 bullet_img = pg.image.load(path.join(player_img_folder, "orange_lazer.png"))
+
+#######################################################################################################################
+# load sounds
+
+shoot_snd = pg.mixer.Sound(path.join(snds_folder,"pew.wav"))
+expl_sounds = []
+for snd in ['expl3.wav', 'expl6.wav']:
+    expl_sounds.append(pg.mixer.Sound(path.join(snds_folder, snd)))
+
+pg.mixer.music.load(path.join(snds_folder, "tgfcoder-FrozenJam-SeamlessLoop.ogg"))
+pg.mixer.music.set_volume(0.4)
+pg.mixer.music.play(loops=-1)
 #######################################################################################################################
 
 # create Sprite groups
@@ -284,8 +324,8 @@ while Playing:
     #########################
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_SPACE:
-                player.shoot()
+            # if event.key == pg.K_SPACE:
+            #     player.shoot()
             if event.key == pg.K_ESCAPE:
                 Playing = False
         if event.type == pg.QUIT:
@@ -303,15 +343,19 @@ while Playing:
     for hit in hits:
         score += -100 - hit.radius
         npc.spwn()
-        # uncomment this if you want to end the game when you collide
-        # Playing = False
+        r.choice(expl_sounds).play()
+        player.sheild -= hit.radius*2
+        if player.sheild <= 0:
+            player.sheild = 0
+            Playing = False
+
 
     # bullet hits npc
     hits = pg.sprite.groupcollide(npc_group,bullet_group,True,True)
     for hit in hits:
         score += 50 - hit.radius
         npc.spwn()
-
+        r.choice(expl_sounds).play()
 
     # randomly make stars
     starchance = r.randint(0,75)
@@ -327,6 +371,7 @@ while Playing:
     all_sprites.draw(screen)
     # draw hud
     draw_text(screen, "Score: "+str(score),18, WIDTH/2,10,WHITE)
+    drawbar(screen, 5, 10, player.sheild)
 
     pg.display.flip()
 
