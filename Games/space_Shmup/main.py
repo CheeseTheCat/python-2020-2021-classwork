@@ -17,7 +17,9 @@ scores_folder = path.join(game_folder, "highscores")
 player_img_folder = path.join(imgs_folder, "player_imgs")
 enemy_img_folder = path.join(imgs_folder, "enemy_imgs")
 background_folder = path.join(imgs_folder, "backgrounds")
-
+animation_folder = path.join(imgs_folder, "animations")
+player_animation_folder = path.join(animation_folder,"player_animation")
+npc_animation_folder = path.join(animation_folder,"npc_animation")
 #################################################
 
 # Game constants
@@ -64,6 +66,14 @@ def drawbar(surf,x,y,pct):
     fill_rect = pg.Rect(x,y,fill,bar_height)
     pg.draw.rect(surf,GREEN,fill_rect)
     pg.draw.rect(surf,WHITE,outline_rect,2)
+
+def draw_lives(surf,x,y,lives,img):
+    for i in range(lives):
+        img_rect = img.get_rect()
+        img_rect.x = x+30*i
+        img_rect.y = y
+        surf.blit(img,img_rect)
+
 #######################################################################################################################
 
 # Game object classes
@@ -86,9 +96,27 @@ class Player(pg.sprite.Sprite):
         self.speedy = 0
         self.shoot_delay = 250
         self.last_shot = pg.time.get_ticks()
+        self.lives = 3
+        self.hid_timer = pg.time.get_ticks()
+        self.hidden = False
+
+    def hide(self):
+        # hide the player temporarily
+        self.lives -= 1
+        self.hidden = True
+        self.hid_timer = pg.time.get_ticks()
+        self.rect.center = (WIDTH / 2, HEIGHT + 200)
+
 
 
     def update(self):
+        # unhide if hidden
+        if self.hidden and pg.time.get_ticks() - self.hid_timer > 3000:
+            self.hidden = False
+            self.rect.bottom = (HEIGHT - (HEIGHT*.04))
+            self.rect.centerx = (WIDTH / 2)
+            self.sheild = 100
+
         self.speedx = 0
         self.speedy = 0
 
@@ -103,9 +131,9 @@ class Player(pg.sprite.Sprite):
         #     self.speedy += 5
 
         # un comment this for insta fire
-        if keystate[pg.K_g]:
+        if keystate[pg.K_g] and not self.hidden:
             self.shootfast()
-        if keystate[pg.K_SPACE]:
+        if keystate[pg.K_SPACE] and not self.hidden:
             self.shoot()
 
         self.rect.x += self.speedx
@@ -117,7 +145,7 @@ class Player(pg.sprite.Sprite):
             self.rect.left = 0
         if self.rect.top <= 0:
             self.rect.top = 0
-        if self.rect.bottom >= HEIGHT:
+        if self.rect.bottom >= HEIGHT and self.rect.bottom <= HEIGHT + 100:
             self.rect.bottom = HEIGHT
 
     def shoot(self):
@@ -233,6 +261,32 @@ class Star(pg.sprite.Sprite):
         star = Star()
         star_group.add(star)
         all_sprites.add(star)
+
+class Explosion(pg.sprite.Sprite):
+    def __init__(self,center,size):
+        super(Explosion, self).__init__()
+        self.size = size
+        self.image = explosion_anim[self.size][0]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.frame = 0
+        self.last_update = pg.time.get_ticks()
+        self.frame_rate = 50
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.frame += 1
+            if self.frame == len(explosion_anim[self.size]):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = explosion_anim[self.size][self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+
+
 #######################################################################################################################
 
 # Initialize pygame and create window
@@ -256,12 +310,34 @@ background_rect = background.get_rect()
 
 # player img
 player_img = pg.image.load(path.join(player_img_folder, "player1_ship.png")).convert()
+player_mini_img = pg.transform.scale(player_img,(25,19))
+player_mini_img.set_colorkey(BLACK)
 
 # npc img
 npc_img = pg.image.load(path.join(enemy_img_folder, "enemy1.png"))
 
 # bullet img
 bullet_img = pg.image.load(path.join(player_img_folder, "orange_lazer.png"))
+
+#explostions
+explosion_anim = {}
+explosion_anim["lg"] = []
+explosion_anim["sm"] = []
+explosion_anim["player"] = []
+for i in range(0,9):
+    fn = "regularExplosion0{}.png".format(i)
+    img = pg.image.load(path.join(npc_animation_folder,fn)).convert()
+    img.set_colorkey(BLACK)
+    img_lg = pg.transform.scale(img,(100,100))
+    img_sm = pg.transform.scale(img, (40, 40))
+    explosion_anim["lg"].append(img_lg)
+    explosion_anim["sm"].append(img_sm)
+    # adding player explosion
+    fn = "sonicExplosion0{}.png".format(i)
+    img = pg.image.load(path.join(player_animation_folder, fn)).convert()
+    img.set_colorkey(BLACK)
+    explosion_anim["player"].append(img)
+
 
 #######################################################################################################################
 # load sounds
@@ -345,17 +421,27 @@ while Playing:
         npc.spwn()
         r.choice(expl_sounds).play()
         player.sheild -= hit.radius*2
+        exlp = Explosion(hit.rect.center, "sm")
+        all_sprites.add(exlp)
         if player.sheild <= 0:
             player.sheild = 0
-            Playing = False
+            death_expl = Explosion(player.rect.center,"player")
+            all_sprites.add(death_expl)
+            player.hide()
+            if player.lives <= 0 : # and not death_expl.alive: need to fix
+                Playing = False
 
 
     # bullet hits npc
     hits = pg.sprite.groupcollide(npc_group,bullet_group,True,True)
     for hit in hits:
         score += 50 - hit.radius
+        exlp = Explosion(hit.rect.center, "lg")
+        all_sprites.add(exlp)
         npc.spwn()
         r.choice(expl_sounds).play()
+
+
 
     # randomly make stars
     starchance = r.randint(0,75)
@@ -372,6 +458,7 @@ while Playing:
     # draw hud
     draw_text(screen, "Score: "+str(score),18, WIDTH/2,10,WHITE)
     drawbar(screen, 5, 10, player.sheild)
+    draw_lives(screen, WIDTH-100, 10, player.lives, player_mini_img)
 
     pg.display.flip()
 
