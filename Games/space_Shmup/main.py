@@ -1,3 +1,4 @@
+#################################################
 import pygame as pg
 import random as r
 import math
@@ -20,6 +21,7 @@ background_folder = path.join(imgs_folder, "backgrounds")
 animation_folder = path.join(imgs_folder, "animations")
 player_animation_folder = path.join(animation_folder,"player_animation")
 npc_animation_folder = path.join(animation_folder,"npc_animation")
+pow_folder = path.join(imgs_folder, "powerups")
 #################################################
 
 # Game constants
@@ -40,10 +42,13 @@ CYAN = (0,199,199)
 MAGENTA = (215,0,174)
 PURPLE = (145,0,208)
 DARKGREEN = (15,109,0)
+POWERUP_TIME = 10000
 
 
 title = "Shmup"
 font_name = pg.font.match_font("arial")
+powerUps_list = ["gun","sheild"]
+powerUps_chance = ["gun","sheild","sheild"]
 
 #######################################################################################################################
 
@@ -74,6 +79,21 @@ def draw_lives(surf,x,y,lives,img):
         img_rect.y = y
         surf.blit(img,img_rect)
 
+def show_go_screen():
+    screen.blit(background, background_rect)
+    draw_text(screen, "SHMUP!", 64, WIDTH / 2, HEIGHT / 4, WHITE)
+    draw_text(screen, "Use Arrow keys or WASD to move, Space to fire", 22,
+              WIDTH /2, HEIGHT/2, WHITE)
+    draw_text(screen, "Press a key to begin", 18, WIDTH /2, HEIGHT *3/4, WHITE)
+    pg.display.flip()
+    waiting = True
+    while waiting:
+        clock.tick(FPS)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+            if event.type == pg.KEYUP:
+                waiting = False
 #######################################################################################################################
 
 # Game object classes
@@ -99,17 +119,15 @@ class Player(pg.sprite.Sprite):
         self.lives = 3
         self.hid_timer = pg.time.get_ticks()
         self.hidden = False
-
-    def hide(self):
-        # hide the player temporarily
-        self.lives -= 1
-        self.hidden = True
-        self.hid_timer = pg.time.get_ticks()
-        self.rect.center = (WIDTH / 2, HEIGHT + 200)
-
-
+        self.power_level = 1
+        self.pow_timer = pg.time.get_ticks()
 
     def update(self):
+        # time out power ups
+        if self.power_level >= 2 and pg.time.get_ticks() - self.pow_timer > POWERUP_TIME:
+            self.power_level -= 1
+            self.pow_timer = pg.time.get_ticks()
+
         # unhide if hidden
         if self.hidden and pg.time.get_ticks() - self.hid_timer > 3000:
             self.hidden = False
@@ -148,20 +166,59 @@ class Player(pg.sprite.Sprite):
         if self.rect.bottom >= HEIGHT and self.rect.bottom <= HEIGHT + 100:
             self.rect.bottom = HEIGHT
 
+    def hide(self):
+        # hide the player temporarily
+        self.lives -= 1
+        self.hidden = True
+        self.hid_timer = pg.time.get_ticks()
+        self.rect.center = (WIDTH / 2, HEIGHT + 200)
+
+
     def shoot(self):
         now = pg.time.get_ticks()
         if now-self.last_shot > self.shoot_delay:
             self.last_shot = now
-            b = Bullet(self.rect.centerx,self.rect.top+1)
-            all_sprites.add(b)
-            bullet_group.add(b)
-            shoot_snd.play()
+            if self.power_level == 1:
+                b = Bullet(self.rect.centerx,self.rect.top+1)
+                all_sprites.add(b)
+                bullet_group.add(b)
+                shoot_snd.play()
+            elif self.power_level == 2:
+                b1 = Bullet(self.rect.left, self.rect.top + 1)
+                b2 = Bullet(self.rect.right, self.rect.top + 1)
+                all_sprites.add(b1)
+                bullet_group.add(b1)
+                all_sprites.add(b2)
+                bullet_group.add(b2)
+                shoot_snd.play()
+            elif self.power_level >= 3:
+                b1 = Bullet(self.rect.left, self.rect.top + 1)
+                b1.inc_spread(-2)
+                b2 = Bullet(self.rect.right, self.rect.top + 1)
+                b2.inc_spread(2)
+                b3 = Bullet(self.rect.centerx, self.rect.top + 1)
+                all_sprites.add(b1)
+                bullet_group.add(b1)
+                all_sprites.add(b2)
+                bullet_group.add(b2)
+                all_sprites.add(b3)
+                bullet_group.add(b3)
+                shoot_snd.play()
 
     def shootfast(self):
         b = Bullet(self.rect.centerx,self.rect.top+1)
         all_sprites.add(b)
         bullet_group.add(b)
         shoot_snd.play()
+
+    def sheilds_up(self,num):
+        self.sheild += num
+        if self.sheild >= 100:
+            self.sheild = 100
+
+    def gun_powerup(self):
+        self.power_level += 1
+        self.pow_timer = pg.time.get_ticks()
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
@@ -175,14 +232,17 @@ class Bullet(pg.sprite.Sprite):
         self.rect.bottom = y
         self.rect.centerx = x
         self.speed = -10
+        self.spread = 0
 
     def update(self):
         self.rect.y += self.speed
-
+        self.rect.x += self.spread
         # kill bullet when bottom leaves screen
         if self.rect.bottom < 0:
             self.kill()
 
+    def inc_spread(self,num):
+        self.spread = num
 
 class Npc(pg.sprite.Sprite):
     def __init__(self):
@@ -286,6 +346,20 @@ class Explosion(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
+class Powerup(pg.sprite.Sprite):
+    def __init__(self,center):
+        super(Powerup, self).__init__()
+        self.type = r.choice(powerUps_chance)
+        self.image = pows_images[self.type]
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.speedy = 3
+
+    def update(self):
+        self.rect.y += self.speedy
+        if self.rect.top > HEIGHT:
+            self.kill()
 
 #######################################################################################################################
 
@@ -319,7 +393,7 @@ npc_img = pg.image.load(path.join(enemy_img_folder, "enemy1.png"))
 # bullet img
 bullet_img = pg.image.load(path.join(player_img_folder, "orange_lazer.png"))
 
-#explostions
+# explostions
 explosion_anim = {}
 explosion_anim["lg"] = []
 explosion_anim["sm"] = []
@@ -337,6 +411,12 @@ for i in range(0,9):
     img = pg.image.load(path.join(player_animation_folder, fn)).convert()
     img.set_colorkey(BLACK)
     explosion_anim["player"].append(img)
+
+# powerups
+pows_images = {}
+for i in range(len(powerUps_list)):
+    fn = "img_{}.png".format(i)
+    pows_images[powerUps_list[i]] = pg.image.load(path.join(pow_folder,fn)).convert()
 
 
 #######################################################################################################################
@@ -359,40 +439,49 @@ players_group = pg.sprite.Group()
 npc_group = pg.sprite.Group()
 bullet_group = pg.sprite.Group()
 star_group = pg.sprite.Group()
+pow_group = pg.sprite.Group()
 
 #######################################################################################################################
 
-# create game objects
-#######################################################################################################################
-player = Player()
-for i in range(10):
-    npc = Npc()
-    npc_group.add(npc)
-star = Star()
-
-#######################################################################################################################
-
-# add objects to sprite groups
-#######################################################################################################################
-players_group.add(player)
-star_group.add(star)
-# npc_group.add(npc)
-
-for i in players_group:
-    all_sprites.add(i)
-
-for i in npc_group:
-    all_sprites.add(i)
-
-for i in star_group:
-    all_sprites.add(i)
-#######################################################################################################################
 
 # Game Loop
 #######################################################################################################################
 Playing = True
+game_over = True
 #########################################
 while Playing:
+    if game_over:
+        show_go_screen()
+        game_over = False
+        # create game objects
+        #######################################################################################################################
+        player = Player()
+        for i in range(10):
+            npc = Npc()
+            npc_group.add(npc)
+        star = Star()
+
+        #######################################################################################################################
+
+        # add objects to sprite groups
+        #######################################################################################################################
+        players_group.add(player)
+        star_group.add(star)
+        # npc_group.add(npc)
+
+        for i in players_group:
+            all_sprites.add(i)
+
+        for i in npc_group:
+            all_sprites.add(i)
+
+        for i in star_group:
+            all_sprites.add(i)
+
+        for i in pow_group:
+            all_sprites.add(i)
+        #######################################################################################################################
+
     # timing
     clock.tick(FPS)
 
@@ -429,7 +518,7 @@ while Playing:
             all_sprites.add(death_expl)
             player.hide()
             if player.lives <= 0 : # and not death_expl.alive: need to fix
-                Playing = False
+                game_over = True
 
 
     # bullet hits npc
@@ -440,7 +529,20 @@ while Playing:
         all_sprites.add(exlp)
         npc.spwn()
         r.choice(expl_sounds).play()
+        pow_chance = r.random()
+        if pow_chance >= .85:
+            pow = Powerup(hit.rect.center)
+            pow_group.add(pow)
+            all_sprites.add(pow)
 
+    # pow hits player
+    hits = pg.sprite.spritecollide(player, pow_group, True, pg.sprite.collide_circle)
+    for hit in hits:
+        if hit.type == "sheild":
+            num = r.randint(15,50)
+            player.sheilds_up(num)
+        elif hit.type == "gun":
+            player.gun_powerup()
 
 
     # randomly make stars
