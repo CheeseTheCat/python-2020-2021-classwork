@@ -19,20 +19,22 @@ class Game(object):
 
         #create sprite groups
         self.all_sprites = pg.sprite.Group()
-        self.player_group = pg.sprite.Group()
-        self.enemy_group = pg.sprite.Group()
+        self.platforms_group = pg.sprite.Group()
 
+        for plat in PLATFORM_LIST:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms_group.add(p)
         # create game objects
-        self.player = Player()
+        self.player = Player(self)
 
         # add game objects to groups
         self.all_sprites.add(self.player)
 
         self.run()
 
-        pass
-
     def run(self):
+        # game loop
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
@@ -48,11 +50,23 @@ class Game(object):
                     self.playing = False
                 self.running = False
 
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE or event.key == pg.K_UP or event.key == pg.K_w:
+                    self.player.jump()
+
     def update(self):
         self.all_sprites.update()
 
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.platforms_group, False)
+            if hits:
+                self.player.pos.y = hits[0].rect.top
+                self.player.vel.y = 0
+
+        # if player reaches top 1/4 of screen
 
     def draw(self):
+        self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         pg.display.flip()
 

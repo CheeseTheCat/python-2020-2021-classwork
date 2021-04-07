@@ -8,13 +8,10 @@ img_folder = os.path.join(game_folder,"img")
 snd_folder = os.path.join(game_folder,"snd")
 
 
-HEIGHT = 450
-WIDTH = 550
+HEIGHT = 600
+WIDTH = 480
 FPS = 45
 title = "Sproing"
-mousex=0
-mousey=0
-mouse_bttn_held = False
 
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -27,4 +24,17 @@ LIME = (182,255,0)
 CYAN = (0,199,199)
 MAGENTA = (215,0,174)
 PURPLE = (145,0,208)
-DARKGREEN = (15,109,0)
+DARKISHGREEN = (45, 150, 15)
+
+
+# Starting platforms
+PLATFORM_LIST = [(0, HEIGHT - 40, WIDTH, 40),
+                 (WIDTH / 2 - 50, HEIGHT * 3 / 4, 100, 20),
+                 (125, HEIGHT - 350, 100, 20),
+                 (350, 200, 100, 20),
+                 (175, 100, 50, 20)]
+
+# Player properties
+PLAYER_ACC = 0.5
+PLAYER_FRICTION = -0.12
+PLAYER_GRAV = 0.8
