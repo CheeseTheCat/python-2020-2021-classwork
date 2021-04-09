@@ -48,7 +48,7 @@ POWERUP_TIME = 10000
 title = "Shmup"
 font_name = pg.font.match_font("arial")
 powerUps_list = ["gun","sheild"]
-powerUps_chance = ["gun","sheild","sheild"]
+powerUps_chance = ["gun","sheild","sheild","sheild"]
 
 #######################################################################################################################
 
@@ -206,10 +206,32 @@ class Player(pg.sprite.Sprite):
                 shoot_snd.play()
 
     def shootfast(self):
-        b = Bullet(self.rect.centerx,self.rect.top+1)
-        all_sprites.add(b)
-        bullet_group.add(b)
-        shoot_snd.play()
+        if self.power_level == 1:
+            b = Bullet(self.rect.centerx, self.rect.top + 1)
+            all_sprites.add(b)
+            bullet_group.add(b)
+            shoot_snd.play()
+        elif self.power_level == 2:
+            b1 = Bullet(self.rect.left, self.rect.top + 1)
+            b2 = Bullet(self.rect.right, self.rect.top + 1)
+            all_sprites.add(b1)
+            bullet_group.add(b1)
+            all_sprites.add(b2)
+            bullet_group.add(b2)
+            shoot_snd.play()
+        elif self.power_level >= 3:
+            b1 = Bullet(self.rect.left, self.rect.top + 1)
+            b1.inc_spread(-2)
+            b2 = Bullet(self.rect.right, self.rect.top + 1)
+            b2.inc_spread(2)
+            b3 = Bullet(self.rect.centerx, self.rect.top + 1)
+            all_sprites.add(b1)
+            bullet_group.add(b1)
+            all_sprites.add(b2)
+            bullet_group.add(b2)
+            all_sprites.add(b3)
+            bullet_group.add(b3)
+            shoot_snd.play()
 
     def sheilds_up(self,num):
         self.sheild += num
@@ -286,8 +308,8 @@ class Npc(pg.sprite.Sprite):
             self.rect.bottom = -1
             self.rect.centerx = r.randint(30,(WIDTH-30))
             self.speedy = r.randint(4, 10)
-            spwn_chance = r.randint(0,100)
-            if spwn_chance >=100:
+            spwn_chance = r.randint(0,50)
+            if spwn_chance >=49:
                 self.spwn()
     def spwn(self):
         npc = Npc()
@@ -530,7 +552,7 @@ while Playing:
         npc.spwn()
         r.choice(expl_sounds).play()
         pow_chance = r.random()
-        if pow_chance >= .85:
+        if pow_chance >= .90:
             pow = Powerup(hit.rect.center)
             pow_group.add(pow)
             all_sprites.add(pow)
