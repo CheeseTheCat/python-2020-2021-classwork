@@ -9,6 +9,7 @@ img_folder = os.path.join(game_folder,"imgs")
 sound_folder = os.path.join(game_folder,"sounds")
 save_folder = os.path.join(game_folder, "saveData")
 text_folder = os.path.join(game_folder, "textData")
+sprites_folder = os.path.join(img_folder, "sprites")
 
 
 
@@ -162,7 +163,7 @@ class Npc(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player,self).__init__()
-        self.image = player_img
+        self.image = pygame.Surface((25, 25))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.rect.center = WIDTH/2,HEIGHT/2
@@ -233,7 +234,7 @@ pygame.init()
 pygame.mixer.init()
 
 #load in game imagaes
-player_img = pygame.image.load(os.path.join(img_folder,"player.png")).convert()
+# player_img = pygame.image.load(os.path.join(sprites_folder,"player.png")).convert()
 
 
 screen=pygame.display.set_mode((WIDTH,HEIGHT))
