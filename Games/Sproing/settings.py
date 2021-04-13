@@ -12,6 +12,9 @@ HEIGHT = 600
 WIDTH = 480
 FPS = 45
 title = "Sproing"
+FONT_NAME = "arial"
+HS_FILE = "highscore.txt"
+SPRITESHEET = "spritesheet_jumper.png"
 
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -38,3 +41,4 @@ PLATFORM_LIST = [(0, HEIGHT - 40, WIDTH, 40),
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
 PLAYER_GRAV = 0.8
+PLAYER_JUMP = 20
