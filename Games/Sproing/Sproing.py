@@ -3,6 +3,9 @@ import random
 from os import path
 from settings import *
 from sprites import *
+# Art from Kenney.nl
+# Happy Tune by http://opengameart.org/users/syncopika
+# Yippee by http://opengameart.org/users/snabish
 
 class Game(object):
     def __init__(self):
@@ -29,35 +32,33 @@ class Game(object):
         # load spritesheet img
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
+        self.snd_dir = path.join(self.dir, 'snd')
+        self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump33.wav'))
+        self.boost_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Boost16.wav'))
+
 
     def new(self):
         # start a new game
-
         self.score = 0
-        #create sprite groups
         self.all_sprites = pg.sprite.Group()
-        self.platforms_group = pg.sprite.Group()
-
-        for plat in PLATFORM_LIST:
-            p = Platform(*plat)
-            self.all_sprites.add(p)
-            self.platforms_group.add(p)
-        # create game objects
+        self.platforms = pg.sprite.Group()
+        self.powerups = pg.sprite.Group()
         self.player = Player(self)
-
-        # add game objects to groups
-        self.all_sprites.add(self.player)
-
+        for plat in PLATFORM_LIST:
+            Platform(self, *plat)
+            pg.mixer.music.load(path.join(self.snd_dir, 'Happy Tune.ogg'))
         self.run()
 
     def run(self):
         # game loop
+        pg.mixer.music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.fadeout(500)
 
 
     def events(self):
@@ -70,32 +71,51 @@ class Game(object):
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE or event.key == pg.K_UP or event.key == pg.K_w:
                     self.player.jump()
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE or event.key == pg.K_UP or event.key == pg.K_w:
+                    self.player.jump_cut()
 
     def update(self):
         self.all_sprites.update()
 
+        # collision code
         if self.player.vel.y > 0:
-            hits = pg.sprite.spritecollide(self.player, self.platforms_group, False)
+            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
-                self.player.pos.y = hits[0].rect.top
-                self.player.vel.y = 0
+                lowest = hits[0]
+                for hit in hits:
+                    if hit.rect.bottom > lowest.rect.bottom:
+                        lowest = hit
+                if self.player.pos.x < lowest.rect.right + 10 and \
+                    self.player.pos.x > lowest.rect.left - 10:
+                    if self.player.pos.y < lowest.rect.centery:
+                        self.player.pos.y = lowest.rect.top
+                        self.player.vel.y = 0
+                        self.player.jumping = False
 
         # if player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT /4:
-            self.player.pos.y += abs(self.player.vel.y)
-            for plat in self.platforms_group:
-                plat.rect.y += abs(self.player.vel.y)
+            self.player.pos.y += max(abs(self.player.vel.y), 2)
+            for plat in self.platforms:
+                plat.rect.y += max(abs(self.player.vel.y), 2)
                 if plat.rect.top >= HEIGHT:
                     plat.kill()
                     self.score += 10
 
-        # spawn new platforms to keep same average number
-        while len(self.platforms_group) < 6:
-            width = random.randrange(50,100)
+            # spawn new platforms to keep same average number
+        while len(self.platforms) < 6:
+            width = random.randrange(50, 100)
+            Platform(self, random.randrange(0, WIDTH - width),
+                         random.randrange(-75, -30))
 
-            p = Platform(random.randrange(0, WIDTH-width),random.randrange(-55, -40),width, 20)
-            self.platforms_group.add(p)
-            self.all_sprites.add(p)
+        # if player hits powerups
+        pow_hits = pg.sprite.spritecollide(self.player, self.powerups, True)
+        for pow in pow_hits:
+            if pow.type == 'boost':
+                self.boost_sound.play()
+                self.player.vel.y = -BOOST_POWER
+                self.player.jumping = False
+
 
         # Die
         if self.player.rect.bottom > HEIGHT:
@@ -103,17 +123,20 @@ class Game(object):
                 sprite.rect.y -= max(self.player.vel.y, 10)
                 if sprite.rect.bottom < 0:
                     sprite.kill()
-            if len(self.platforms_group) == 0:
+            if len(self.platforms) == 0:
                 self.playing = False
 
     def draw(self):
         self.screen.fill(CYAN)
         self.all_sprites.draw(self.screen)
+        self.screen.blit(self.player.image, self.player.rect)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
 
         pg.display.flip()
 
     def show_start_screen(self):
+        pg.mixer.music.load(path.join(self.snd_dir, 'Yippee.ogg'))
+        pg.mixer.music.play(loops=-1)
         self.screen.fill(CYAN)
         self.draw_text(title, 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Arrows to move, Space to jump", 22, WHITE, WIDTH / 2, HEIGHT/2)
@@ -121,10 +144,13 @@ class Game(object):
         self.draw_text("High Score: "+ str(self.highscore), 22, WHITE, WIDTH /2, 15)
         pg.display.flip()
         self.wait_for_key()
+        pg.mixer.music.fadeout(500)
 
     def show_GO_screen(self):
         if not self.running:
             return
+        pg.mixer.music.load(path.join(self.snd_dir, 'Yippee.ogg'))
+        pg.mixer.music.play(loops=-1)
         self.screen.fill(CYAN)
         self.draw_text("Game Over", 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Score: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
@@ -138,9 +164,6 @@ class Game(object):
             self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
         self.wait_for_key()
-
-    def load_img(self):
-        pass
 
     def draw_text(self, text, size, color, x, y):
         font = pg.font.Font(self.font_name, size)
