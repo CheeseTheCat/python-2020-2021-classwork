@@ -29,6 +29,11 @@ class Game(object):
             except:
                 self.highscore = 0
 
+        # clouds!
+        self.cloud_images = []
+        for i in range(1,4):
+            self.cloud_images.append(pg.image.load(path.join(img_dir, 'cloud{}.png'.format(i))).convert())
+
         # load spritesheet img
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
@@ -40,13 +45,19 @@ class Game(object):
     def new(self):
         # start a new game
         self.score = 0
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
         self.powerups = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.clouds = pg.sprite.Group()
         self.player = Player(self)
         for plat in PLATFORM_LIST:
             Platform(self, *plat)
-            pg.mixer.music.load(path.join(self.snd_dir, 'Happy Tune.ogg'))
+        for i in range(10):
+            c = Cloud(self)
+            c.rect.y += 500
+        self.mob_timer = 0
+        pg.mixer.music.load(path.join(self.snd_dir, 'Happy Tune.ogg'))
         self.run()
 
     def run(self):
@@ -78,6 +89,17 @@ class Game(object):
     def update(self):
         self.all_sprites.update()
 
+        # spawn mob?
+        now = pg.time.get_ticks()
+        if now - self.mob_timer > MOB_FREQ + random.choice([-1000, -500, 0, 500, 1000]):
+            self.mob_timer = now
+            Mob(self)
+
+        # if mob hits player
+        mob_hits = pg.sprite.spritecollide(self.player, self.mobs, False, pg.sprite.collide_mask)
+        if mob_hits:
+            self.playing = False
+
         # collision code
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -95,7 +117,13 @@ class Game(object):
 
         # if player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT /4:
+            if random.randrange(100) < 15:
+                Cloud(self)
             self.player.pos.y += max(abs(self.player.vel.y), 2)
+            for cloud in self.clouds:
+                cloud.rect.y += max(abs(self.player.vel.y / 2), 2)
+            for mob in self.mobs:
+                mob.rect.y += max(abs(self.player.vel.y), 2)
             for plat in self.platforms:
                 plat.rect.y += max(abs(self.player.vel.y), 2)
                 if plat.rect.top >= HEIGHT:
@@ -105,8 +133,7 @@ class Game(object):
             # spawn new platforms to keep same average number
         while len(self.platforms) < 6:
             width = random.randrange(50, 100)
-            Platform(self, random.randrange(0, WIDTH - width),
-                         random.randrange(-75, -30))
+            Platform(self, random.randrange(0, WIDTH - width),-30) # random.randrange(-50, -40)
 
         # if player hits powerups
         pow_hits = pg.sprite.spritecollide(self.player, self.powerups, True)
@@ -129,7 +156,6 @@ class Game(object):
     def draw(self):
         self.screen.fill(CYAN)
         self.all_sprites.draw(self.screen)
-        self.screen.blit(self.player.image, self.player.rect)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
 
         pg.display.flip()
