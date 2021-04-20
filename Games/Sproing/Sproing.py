@@ -156,7 +156,7 @@ class Game(object):
     def draw(self):
         self.screen.fill(CYAN)
         self.all_sprites.draw(self.screen)
-        self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
+        self.draw_text(str(self.score), 22, BLACK, WIDTH / 2, 15)
 
         pg.display.flip()
 
@@ -164,10 +164,10 @@ class Game(object):
         pg.mixer.music.load(path.join(self.snd_dir, 'Yippee.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(CYAN)
-        self.draw_text(title, 48, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Arrows to move, Space to jump", 22, WHITE, WIDTH / 2, HEIGHT/2)
-        self.draw_text("Press Enter to play", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
-        self.draw_text("High Score: "+ str(self.highscore), 22, WHITE, WIDTH /2, 15)
+        self.draw_text(title, 48, BLACK, WIDTH / 2, HEIGHT / 4)
+        self.draw_text("Arrows to move, Space to jump", 22, BLACK, WIDTH / 2, HEIGHT/2)
+        self.draw_text("Press Enter to play", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text("High Score: "+ str(self.highscore), 22, BLACK, WIDTH /2, 15)
         pg.display.flip()
         self.wait_for_key()
         pg.mixer.music.fadeout(500)
@@ -178,16 +178,16 @@ class Game(object):
         pg.mixer.music.load(path.join(self.snd_dir, 'Yippee.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(CYAN)
-        self.draw_text("Game Over", 48, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Score: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.draw_text("Press Enter to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text("Game Over", 48, BLACK, WIDTH / 2, HEIGHT / 4)
+        self.draw_text("Score: " + str(self.score), 22, BLACK, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("Press Enter to play again", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
         if self.score > self.highscore:
             self.highscore = self.score
-            self.draw_text("NEW HIGH SCORE!", 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
+            self.draw_text("NEW HIGH SCORE!", 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
             with open(path.join(self.dir, HS_FILE), 'w') as f:
                 f.write(str(self.score))
         else:
-            self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, 15)
+            self.draw_text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, 15)
         pg.display.flip()
         self.wait_for_key()
 
