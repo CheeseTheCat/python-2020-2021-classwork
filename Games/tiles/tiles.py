@@ -4,6 +4,7 @@ import random
 from os import path
 from settings import *
 from sprites import *
+from tilemap import *
 
 class Game(object):
     def __init__(self):
@@ -20,6 +21,9 @@ class Game(object):
 
     def load_data(self):
         game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'img')
+        self.map = Map(path.join(game_folder, 'map.txt'))
+        self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         
 
     def new(self):
@@ -31,12 +35,14 @@ class Game(object):
         self.enemies = pg.sprite.Group()
         self.walls = pg.sprite.Group()
 
-        for row, tiles in enumerate(self.map_data):
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
                     Wall(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
+
+        self.camera = Camera(self.map.width, self.map.height)
 
 
         # create game objects
@@ -68,6 +74,7 @@ class Game(object):
 
     def update(self):
         self.all_sprites.update()
+        self.camera.update(self.player)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -79,24 +86,14 @@ class Game(object):
     def draw(self):
         self.screen.fill(BGCOLOR)
         self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
-
-    def show_start_screen(self):
-        pass
-
-    def show_GO_screen(self):
-        pass
-
-    def load_img(self):
-        pass
 
 g = Game()
 
-g.show_start_screen()
 while g.running:
     g.new()
-    g.show_GO_screen()
 
 
 pg.quit()
