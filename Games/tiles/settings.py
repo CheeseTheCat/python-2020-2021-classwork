@@ -25,7 +25,7 @@ LIGHTGREY = (100,100,100)
 
 WIDTH = 1024
 HEIGHT = 768
-FPS = 45
+FPS = 60
 TITLE = "Tiles"
 BGCOLOR = DARKGREY
 
@@ -37,4 +37,16 @@ PLAYER_SPEED = 250
 PLAYER_IMG = 'manBlue_gun.png'
 PLAYER_ROT_SPEED = 250
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
+
+
+WALL_IMG = 'tile_196.png'
+
+MOB_IMG = 'zoimbie1_hold.png'
+MOB_SPEED = 150
+MOB_HIT_RECT = pg.Rect(0,0, 30, 30)
+
+BULLET_IMG = 'bullet.png'
+BULLET_SPEED = 500
+BULLET_LIFETIME = 1200
+BULLET_RATE = 150
 
