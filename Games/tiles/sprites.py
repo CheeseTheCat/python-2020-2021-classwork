@@ -4,6 +4,7 @@ import random
 import os
 from settings import *
 from tilemap import collid_hit_rect
+import pytweening as tween
 vec = pg.math.Vector2
 
 
@@ -67,6 +68,7 @@ class Player(pg.sprite.Sprite):
                 pos = self.pos + BARREL_OFFSET.rotate(-self.rot)
                 Bullet(self.game, pos, dir)
                 self.vel = vec(-KICKBACK, 0).rotate(-self.rot)
+                random.choice(self.game.weapon_sounds['gun']).play()
                 MuzzleFlash(self.game, pos, self.rot)
         # if self.vel.x != 0 and self.vel.y != 0:
         #     self.vel *= 0.7071
@@ -86,6 +88,10 @@ class Player(pg.sprite.Sprite):
         collide_with_walls(self, self.game.walls,'y')
         self.rect.center = self.hit_rect.center
 
+    def add_health(self, amount):
+        self.health += amount
+        if self.health > PLAYER_HEALTH:
+            self.health = PLAYER_HEALTH
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x,y):
@@ -118,7 +124,7 @@ class Mob(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.mob_img
+        self.image = game.mob_img.copy()
         self.rect = self.image.get_rect()
         self.rect.center = (x,y)
         self.hit_rect = MOB_HIT_RECT.copy()
@@ -130,28 +136,38 @@ class Mob(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.health = MOB_HEALTH
         self.speed = random.choice(MOB_SPEEDS)
+        self.target = game.player
 
 
     def update(self):
-        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1,0))
-        self.image = pg.transform.rotate(self.game.mob_img, self.rot)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.acc = vec(1, 0).rotate(-self.rot)
-        self.avoid_mobs()
-        self.acc.scale_to_length(self.speed)
-        if self.game.frictionless:
-            self.acc += self.vel * -0.01
-        else:
-            self.acc += self.vel * -1
-        self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-        self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
-        self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
-        self.rect.center = self.hit_rect.center
+        target_dist = self.target.pos - self.pos
+        sight = DETECT_RADIUS
+        if self.game.unlimited_sight:
+            sight = 999999
+        if target_dist.length_squared() < sight**2:
+            if random.random() < 0.002:
+                random.choice(self.game.zombie_moan_sounds).play()
+            self.rot = target_dist.angle_to(vec(1,0))
+            self.image = pg.transform.rotate(self.game.mob_img, self.rot)
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(1, 0).rotate(-self.rot)
+            self.avoid_mobs()
+            self.acc.scale_to_length(self.speed)
+            if self.game.frictionless:
+                self.acc += self.vel * -0.01
+            else:
+                self.acc += self.vel * -1
+            self.vel += self.acc * self.game.dt
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            self.hit_rect.centerx = self.pos.x
+            collide_with_walls(self, self.game.walls, 'x')
+            self.hit_rect.centery = self.pos.y
+            collide_with_walls(self, self.game.walls, 'y')
+            self.rect.center = self.hit_rect.center
         if self.health <= 0:
+            random.choice(self.game.zombie_hit_sounds).play()
+            self.game.map_img.blit(self.game.splat, self.pos - vec(32, 32))
             self.kill()
 
     def avoid_mobs(self):
@@ -206,6 +222,7 @@ class MuzzleFlash(pg.sprite.Sprite):
         size = random.randint(20,50)
         self.image = pg.transform.scale(random.choice(game.gun_flashes), (size, size))
         self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
         self.pos = pos
         self.rect.center = pos
         self.rot = rot
@@ -219,10 +236,24 @@ class MuzzleFlash(pg.sprite.Sprite):
 class Item(pg.sprite.Sprite):
     def __init__(self, game, pos, type):
         self._layer = ITEMS_LAYER
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites , game.items
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.item_images[type]
         self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
         self.type = type
+        self.pos = pos
         self.rect.center = pos
+        self.tween = tween.easeInOutSine
+        self.step = 0
+        self.dir = 1
+
+    def update(self):
+        # bobbing motion
+        offset = BOB_RANGE * (self.tween(self.step / BOB_RANGE) - 0.5)
+        self.rect.centery = self.pos.y + offset * self.dir
+        self.step += BOB_SPEED
+        if self.step > BOB_RANGE:
+            self.step = 0
+            self.dir *= -1

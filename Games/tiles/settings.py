@@ -50,6 +50,8 @@ MOB_HEALTH = 100
 MOB_DMG = 10
 MOB_KNOCKBACK = 20
 AVOID_RADIUS = 50
+DETECT_RADIUS = 400
+
 
 BULLET_IMG = 'bullet.png'
 BULLET_SPEED = 500
@@ -62,6 +64,7 @@ BULLET_DMG = 10
 MUZZLE_FLASHES = ["muzzle_00.png","muzzle_01.png","muzzle_02.png","muzzle_03.png","muzzle_04.png",
                   "muzzle_05.png","muzzle_06.png","muzzle_01.png","muzzle_02.png","muzzle_03.png",
                   "muzzle_04.png","muzzle_05.png","muzzle_06.png"]
+SPLAT = 'splat green.png'
 FLASH_DURATION = 40
 
 WALL_LAYER = 1
@@ -72,3 +75,16 @@ MOB_LAYER = 2
 EFFECTS_LAYER = 4
 
 ITEM_IMAGES = {'health': 'medkit.png'}
+HEALTH_PACK_AMOUNT = 20
+BOB_RANGE = 15
+BOB_SPEED = 0.6
+
+
+BG_MUSIC = 'espionage.ogg'
+PLAYER_HIT_SOUNDS = ['pain/8.wav', 'pain/9.wav', 'pain/10.wav', 'pain/11.wav']
+ZOMBIE_MOAN_SOUNDS = ['brains2.wav', 'brains3.wav', 'zombie-roar-1.wav', 'zombie-roar-2.wav',
+                      'zombie-roar-3.wav', 'zombie-roar-5.wav', 'zombie-roar-6.wav', 'zombie-roar-7.wav']
+ZOMBIE_HIT_SOUNDS = ['splat-15.wav']
+WEAPON_SOUNDS_GUN = ['sfx_weapon_singleshot2.wav']
+EFFECTS_SOUNDS = {'level_start': 'level_start.wav',
+                  'health_up': 'health_pack.wav'}
