@@ -5,6 +5,7 @@ import os
 from settings import *
 from tilemap import collid_hit_rect
 import pytweening as tween
+from itertools import chain
 vec = pg.math.Vector2
 
 
@@ -47,6 +48,8 @@ class Player(pg.sprite.Sprite):
         self.rot = 0
         self.last_shot = 0
         self.health = PLAYER_HEALTH
+        self.weapon = 'pistol'
+        self.damaged = False
 
     def get_keys(self):
         self.rot_speed = 0
@@ -61,24 +64,44 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel += vec(-PLAYER_SPEED/2, 0).rotate(-self.rot)
         if keys[pg.K_SPACE]:
-            now = pg.time.get_ticks()
-            if now - self.last_shot > BULLET_RATE:
-                self.last_shot = now
-                dir = vec(1, 0).rotate(-self.rot)
-                pos = self.pos + BARREL_OFFSET.rotate(-self.rot)
-                Bullet(self.game, pos, dir)
-                self.vel = vec(-KICKBACK, 0).rotate(-self.rot)
-                random.choice(self.game.weapon_sounds['gun']).play()
-                MuzzleFlash(self.game, pos, self.rot)
+            self.shoot()
+
         # if self.vel.x != 0 and self.vel.y != 0:
         #     self.vel *= 0.7071
 
+
+    def shoot(self):
+        now = pg.time.get_ticks()
+        if now - self.last_shot > WEAPONS[self.weapon]['rate']:
+            self.last_shot = now
+            dir = vec(1, 0).rotate(-self.rot)
+            pos = self.pos + BARREL_OFFSET.rotate(-self.rot)
+            self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
+            for i in range(WEAPONS[self.weapon]['bullet_count']):
+                spread = uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
+                Bullet(self.game, pos, dir.rotate(spread), WEAPONS[self.weapon]['damage'])
+                snd = random.choice(self.game.weapon_sounds[self.weapon])
+                if snd.get_num_channels() > 2:
+                    snd.stop()
+                snd.play()
+            MuzzleFlash(self.game, pos, self.rot)
+
+    def hit(self):
+        self.damaged = True
+        self.damage_alpha = chain(DAMAGE_ALPHA * 2)
 
     def update(self):
         self.get_keys()
         self.pos += self.vel * self.game.dt
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
         self.image = pg.transform.rotate(self.game.player_img, self.rot)
+        if self.damaged:
+            try:
+                self.image.fill((255, 0, 0, next(self.damage_alpha)), special_flags=pg.BLEND_RGBA_MULT)
+            except:
+                self.damaged = False
+
+
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.image.set_colorkey(BLACK)
@@ -191,26 +214,27 @@ class Mob(pg.sprite.Sprite):
 
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, game, pos, dir):
+    def __init__(self, game, pos, dir, damage):
         self._layer = BULLET_LAYER
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.bullet_img
+        self.image = game.bullet_images[WEAPONS[game.player.weapon]['bullet_size']]
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect
         self.pos = vec(pos)
         self.rect.center = pos
-        spread = uniform(-GUN_SPREAD, GUN_SPREAD)
-        self.vel = dir.rotate(spread) * BULLET_SPEED
+        # spread = uniform(-GUN_SPREAD, GUN_SPREAD)
+        self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed'] * random.uniform(0.9, 1.1)
         self.spawn_time = pg.time.get_ticks()
+        self.damage = damage
 
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
         if pg.sprite.spritecollideany(self, self.game.walls):
             self.kill()
-        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
+        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.game.player.weapon]['bullet_lifetime']:
             self.kill()
 
 class MuzzleFlash(pg.sprite.Sprite):
