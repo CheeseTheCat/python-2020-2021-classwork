@@ -50,6 +50,7 @@ class Player(pg.sprite.Sprite):
         self.health = PLAYER_HEALTH
         self.weapon = 'pistol'
         self.damaged = False
+        self.has_shotgun = False
 
     def get_keys(self):
         self.rot_speed = 0
@@ -65,6 +66,12 @@ class Player(pg.sprite.Sprite):
             self.vel += vec(-PLAYER_SPEED/2, 0).rotate(-self.rot)
         if keys[pg.K_SPACE]:
             self.shoot()
+        if keys[pg.K_TAB]:
+            if self.has_shotgun:
+                if self.weapon == 'pistol':
+                    self.weapon = 'shotgun'
+                elif self.weapon == 'shotgun':
+                    self.weapon = 'pistol'
 
         # if self.vel.x != 0 and self.vel.y != 0:
         #     self.vel *= 0.7071

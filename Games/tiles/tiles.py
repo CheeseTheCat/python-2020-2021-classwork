@@ -158,6 +158,7 @@ class Game(object):
                              tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
                 self.player = Player(self, obj_center.x, obj_center.y)
+                self.player.has_shotgun = False
             if tile_object.name == 'zombie':
                 Mob(self, obj_center.x, obj_center.y)
             if tile_object.name == 'wall':
@@ -229,6 +230,7 @@ class Game(object):
                 hit.kill()
                 self.effects_sounds['gun_pickup'].play()
                 self.player.weapon = 'shotgun'
+                self.player.has_shotgun = True
 
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collid_hit_rect)
