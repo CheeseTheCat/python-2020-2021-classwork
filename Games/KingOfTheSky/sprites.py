@@ -20,6 +20,13 @@ class Player1(pg.sprite.Sprite):
     def jump(self):
         self.vel.y = -3
 
+    def wallcollide(self):
+        hits = pg.sprite.spritecollide(self.game.player1, self.game.walls, False)
+        if hits:
+            if self.vel.y > 0:
+                if self.pos.y <= hits[0].rect.top:
+                    self.pos.y = hits[0].rect.top
+                    self.vel.y = 0  # -self.player1.vel.y
 
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
@@ -45,13 +52,15 @@ class Player1(pg.sprite.Sprite):
             self.vel.y = 10
         self.rect.midbottom = self.pos
 
+        self.wallcollide()
+
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.player_group1
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        self.image.fill(ORANGE)
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -62,15 +71,14 @@ class Player2(pg.sprite.Sprite):
     def jump(self):
         self.vel.y = -3
 
-
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
         if self.vel.y > 2.5:
             self.vel.y = 2.5
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT]:
+        if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
 
         # apply friction

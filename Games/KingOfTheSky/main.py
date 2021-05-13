@@ -51,14 +51,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
-        hits = pg.sprite.spritecollide(self.player1, self.walls, False)
-        if hits:
-            self.player1.pos.y = hits[0].rect.top
-            self.player1.vel.y = 0
-        hits = pg.sprite.spritecollide(self.player2, self.walls, False)
-        if hits:
-            self.player2.pos.y = hits[0].rect.top
-            self.player2.vel.y = 0
+
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
