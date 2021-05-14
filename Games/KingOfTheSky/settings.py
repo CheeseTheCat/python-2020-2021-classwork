@@ -1,7 +1,7 @@
 # game options/settings
 TITLE = "King OF The Sky"
 WIDTH = 640 # 20 tiles
-HEIGHT = 960 # 30 tiles
+HEIGHT = 800 # 25 tiles
 FPS = 60
 
 # Player properties

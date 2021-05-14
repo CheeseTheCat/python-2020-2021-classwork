@@ -21,12 +21,18 @@ class Player1(pg.sprite.Sprite):
         self.vel.y = -3
 
     def wallcollide(self):
-        hits = pg.sprite.spritecollide(self.game.player1, self.game.walls, False)
-        if hits:
-            if self.vel.y > 0:
-                if self.pos.y <= hits[0].rect.top:
-                    self.pos.y = hits[0].rect.top
-                    self.vel.y = 0  # -self.player1.vel.y
+        if self.vel.y > 0:
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                lowest = hits[0]
+                for hit in hits:
+                    if hit.rect.bottom > lowest.rect.bottom:
+                        lowest = hit
+                if self.pos.x < lowest.rect.right + 10 and \
+                        self.pos.x > lowest.rect.left - 10:
+                    if self.pos.y < lowest.rect.centery:
+                        self.pos.y = lowest.rect.top
+                        self.vel.y = 0
 
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
@@ -48,7 +54,7 @@ class Player1(pg.sprite.Sprite):
             self.pos.x = 0
         if self.pos.x < 0:
             self.pos.x = WIDTH
-        if self.pos.y < 0:
+        if self.pos.y - TILESIZE < 0:
             self.vel.y = 10
         self.rect.midbottom = self.pos
 
@@ -56,7 +62,7 @@ class Player1(pg.sprite.Sprite):
 
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.player_group1
+        self.groups = game.all_sprites, game.player_group2
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -76,9 +82,9 @@ class Player2(pg.sprite.Sprite):
         if self.vel.y > 2.5:
             self.vel.y = 2.5
         keys = pg.key.get_pressed()
-        if keys[pg.K_a]:
+        if keys[pg.K_LEFT]:
             self.acc.x = -PLAYER_ACC
-        if keys[pg.K_d]:
+        if keys[pg.K_RIGHT]:
             self.acc.x = PLAYER_ACC
 
         # apply friction
@@ -91,9 +97,25 @@ class Player2(pg.sprite.Sprite):
             self.pos.x = 0
         if self.pos.x < 0:
             self.pos.x = WIDTH
-        if self.pos.y < 0:
+        if self.pos.y - TILESIZE < 0:
             self.vel.y = 10
         self.rect.midbottom = self.pos
+
+        self.wallcollide()
+
+    def wallcollide(self):
+        if self.vel.y > 0:
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                lowest = hits[0]
+                for hit in hits:
+                    if hit.rect.bottom > lowest.rect.bottom:
+                        lowest = hit
+                if self.pos.x < lowest.rect.right + 20 and \
+                        self.pos.x > lowest.rect.left - 10:
+                    if self.pos.y < lowest.rect.centery:
+                        self.pos.y = lowest.rect.top
+                        self.vel.y = 0
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):

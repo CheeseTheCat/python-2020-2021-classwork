@@ -10,7 +10,6 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        pg.key.set_repeat(500, 100)
         self.load_data()
 
     def load_data(self):
@@ -51,6 +50,25 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+
+        hits = pg.sprite.spritecollide(self.player1, self.player_group2, False)
+        if hits:
+            winner = ''
+            if self.player1.pos.y < self.player2.pos.y:
+                winner = 'player1'
+            if self.player2.pos.y < self.player1.pos.y:
+                winner = 'player2'
+
+            if winner == 'player1':
+                self.player1.vel *= -1
+                self.player2.vel *= -1
+                self.player2.vel.y *= 3
+            elif winner == 'player2':
+                self.player1.vel.y *= 3
+
+
+
+
 
 
     def draw_grid(self):
