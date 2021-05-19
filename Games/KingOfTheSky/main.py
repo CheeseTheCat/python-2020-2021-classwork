@@ -10,6 +10,8 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
+        self.winner = "Player 1"
+        self.title_font = pg.font.match_font(TITLE_FONT)
         self.load_data()
 
     def load_data(self):
@@ -18,6 +20,12 @@ class Game:
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
+
+    def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect(**{align: (x, y)})
+        self.screen.blit(text_surface, text_rect)
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -60,15 +68,13 @@ class Game:
                 winner = 'player2'
 
             if winner == 'player1':
-                self.player1.vel *= -1
-                self.player2.vel *= -1
-                self.player2.vel.y *= 3
+                self.player2.send_to_spawn()
+                self.player2.vel *= 0
+                self.player2.loose()
             elif winner == 'player2':
-                self.player1.vel.y *= 3
-
-
-
-
+                self.player1.send_to_spawn()
+                self.player1.vel *= 0
+                self.player1.loose()
 
 
     def draw_grid(self):
@@ -101,7 +107,26 @@ class Game:
         pass
 
     def show_go_screen(self):
-        pass
+        self.screen.fill(BLACK)
+        self.draw_text(str.format("{} Wins!", self.winner), self.title_font, 100, RED,
+                       WIDTH / 2, HEIGHT / 2, align="center")
+        self.draw_text("Press space to play again", self.title_font, 55, WHITE,
+                       WIDTH / 2, HEIGHT * 3 / 4, align="center")
+        pg.display.flip()
+        self.wait_for_key()
+
+    def wait_for_key(self):
+        pg.event.wait()
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        waiting = False
 
 # create the game object
 g = Game()
